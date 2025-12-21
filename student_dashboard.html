@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rahul Pandey | Student Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #4895ef;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4cc9f0;
+            --warning: #f72585;
+            --info: #560bad;
+            --card-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            background: white;
+            height: 100vh;
+            padding: 30px 20px;
+            position: sticky;
+            top: 0;
+            box-shadow: var(--card-shadow);
+            z-index: 10;
+            transition: var(--transition);
+        }
+        
+        .profile {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+        
+        .profile-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary);
+            margin-bottom: 15px;
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+        
+        .profile-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+        
+        .profile-role {
+            font-size: 14px;
+            color: var(--primary);
+            background: rgba(67, 97, 238, 0.1);
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+        
+        .menu {
+            list-style: none;
+        }
+        
+        .menu-item {
+            margin-bottom: 5px;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+        
+        .menu-item a {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            color: var(--dark);
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 500;
+        }
+        
+        .menu-item i {
+            margin-right: 12px;
+            font-size: 18px;
+            width: 20px;
+            text-align: center;
+            color: var(--primary);
+        }
+        
+        .menu-item:hover, .menu-item.active {
+            background: rgba(67, 97, 238, 0.1);
+        }
+        
+        .menu-item:hover a, .menu-item.active a {
+            color: var(--primary);
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .user-actions {
+            display: flex;
+            align-items: center;
+        }
+        
+        .notification-btn, .user-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 15px;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: relative;
+            transition: var(--transition);
+        }
+        
+        .notification-btn:hover, .user-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--warning);
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 600;
+        }
+        
+        /* Section Styles */
+        .section {
+            display: none;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .section-title {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 10px;
+        }
+        
+        /* Home Section */
+        .welcome-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .welcome-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .welcome-text {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+        
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 20px;
+            color: white;
+        }
+        
+        .stat-icon.blue {
+            background: var(--primary);
+        }
+        
+        .stat-icon.green {
+            background: var(--success);
+        }
+        
+        .stat-icon.pink {
+            background: var(--warning);
+        }
+        
+        .stat-icon.purple {
+            background: var(--info);
+        }
+        
+        .stat-value {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        /* Timetable Section */
+        .filter-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .select-box {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 15px;
+        }
+        
+        .timetable {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 20px;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .timetable th {
+            background: var(--primary);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .timetable td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .timetable tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .timetable tr:hover td {
+            background: rgba(67, 97, 238, 0.05);
+        }
+        
+        .class-time {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .class-subject {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .class-details {
+            font-size: 13px;
+            color: #666;
+        }
+        
+        /* Attendance Section */
+        .attendance-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .attendance-table th {
+            background: var(--primary);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 500;
+        }
+        
+        .attendance-table td {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .attendance-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .attendance-table tr:hover td {
+            background: rgba(67, 97, 238, 0.05);
+        }
+        
+        .attendance-percent {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .percent-high {
+            background: rgba(76, 201, 240, 0.2);
+            color: var(--success);
+        }
+        
+        .percent-medium {
+            background: rgba(247, 37, 133, 0.2);
+            color: var(--warning);
+        }
+        
+        /* Results Section */
+        .results-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .results-table th {
+            background: var(--primary);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 500;
+        }
+        
+        .results-table td {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .results-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .results-table tr:hover td {
+            background: rgba(67, 97, 238, 0.05);
+        }
+        
+        .grade {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .grade-a {
+            background: #4cc9f0;
+        }
+        
+        .grade-b {
+            background: #4895ef;
+        }
+        
+        .grade-c {
+            background: #4361ee;
+        }
+        
+        /* Settings Section */
+        .settings-form {
+            max-width: 600px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+        
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+        
+        .btn-outline {
+            background: white;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background: rgba(67, 97, 238, 0.1);
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            body {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 20px;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-container {
+                flex-direction: column;
+            }
+            
+            .select-box {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="profile">
+        <img src="https://ui-avatars.com/api/?name=Rahul+Pandey&background=4361ee&color=fff&size=128" alt="Profile" class="profile-img">
+        <h3 class="profile-name">Rahul Pandey</h3>
+        <span class="profile-role">Computer Science Student</span>
+    </div>
+    
+    <ul class="menu">
+        <li class="menu-item active" data-section="home">
+            <a href="#"><i class="fas fa-home"></i> Home</a>
+        </li>
+        <li class="menu-item" data-section="timetable">
+            <a href="#"><i class="fas fa-calendar-alt"></i> Time Table</a>
+        </li>
+        <li class="menu-item" data-section="attendance">
+            <a href="#"><i class="fas fa-clipboard-check"></i> Attendance</a>
+        </li>
+        <li class="menu-item" data-section="results">
+            <a href="#"><i class="fas fa-chart-line"></i> Results</a>
+        </li>
+        <li class="menu-item" data-section="settings">
+            <a href="#"><i class="fas fa-cog"></i> Settings</a>
+        </li>
+    </ul>
+</div>
+
+<div class="main-content">
+    <div class="header">
+        <h1 class="page-title">Dashboard</h1>
+        <div class="user-actions">
+            <div class="notification-btn">
+                <i class="fas fa-bell"></i>
+                <span class="notification-badge">3</span>
+            </div>
+            <div class="user-btn">
+                <i class="fas fa-user"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div id="home" class="section active">
+        <div class="welcome-card">
+            <h2 class="welcome-title">Welcome back, Rahul!</h2>
+            <p class="welcome-text">You have 3 classes today. Your next class is Data Structures at 10:00 AM in CS-101.</p>
+        </div>
+        
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-icon blue">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <div>
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">Current Courses</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon green">
+                    <i class="fas fa-percentage"></i>
+                </div>
+                <div>
+                    <div class="stat-value">92%</div>
+                    <div class="stat-label">Attendance</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon pink">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <div>
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">Pending Assignments</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon purple">
+                    <i class="fas fa-calendar-day"></i>
+                </div>
+                <div>
+                    <div class="stat-value">14</div>
+                    <div class="stat-label">Days Until Exams</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title"><i class="fas fa-calendar-day"></i> Today's Schedule</h2>
+            <table class="timetable">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Subject</th>
+                        <th>Location</th>
+                        <th>Faculty</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="class-time">9:00 AM - 10:30 AM</td>
+                        <td>
+                            <div class="class-subject">Data Structures</div>
+                            <div class="class-details">CS-201 | Prof. Smith</div>
+                        </td>
+                        <td>CS-101</td>
+                        <td>Prof. Smith</td>
+                    </tr>
+                    <tr>
+                        <td class="class-time">11:00 AM - 12:30 PM</td>
+                        <td>
+                            <div class="class-subject">Algorithms</div>
+                            <div class="class-details">CS-202 | Prof. Johnson</div>
+                        </td>
+                        <td>CS-102</td>
+                        <td>Prof. Johnson</td>
+                    </tr>
+                    <tr>
+                        <td class="class-time">2:00 PM - 3:30 PM</td>
+                        <td>
+                            <div class="class-subject">Database Systems</div>
+                            <div class="class-details">CS-203 | Prof. Williams</div>
+                        </td>
+                        <td>CS-103</td>
+                        <td>Prof. Williams</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div id="timetable" class="section">
+        <h2 class="section-title"><i class="fas fa-calendar-alt"></i> Time Table</h2>
+        
+        <div class="filter-container">
+            <div class="select-box">
+                <label for="departmentSelect">Department</label>
+                <select id="departmentSelect">
+                    <option value="CSE">Computer Science (CSE)</option>
+                    <option value="EEE">Electrical Engineering (EEE)</option>
+                    <option value="ME">Mechanical Engineering (ME)</option>
+                    <option value="CE">Civil Engineering (CE)</option>
+                </select>
+            </div>
+            
+            <div class="select-box">
+                <label for="daySelect">Day</label>
+                <select id="daySelect">
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                </select>
+            </div>
+        </div>
+        
+        <div id="timetableContent"></div>
+    </div>
+    
+    <div id="attendance" class="section">
+        <h2 class="section-title"><i class="fas fa-clipboard-check"></i> Attendance</h2>
+        
+        <table class="attendance-table">
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Attended</th>
+                    <th>Total</th>
+                    <th>Percentage</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Data Structures</td>
+                    <td>18</td>
+                    <td>20</td>
+                    <td><span class="attendance-percent percent-high">90%</span></td>
+                </tr>
+                <tr>
+                    <td>Algorithms</td>
+                    <td>15</td>
+                    <td>18</td>
+                    <td><span class="attendance-percent percent-high">83%</span></td>
+                </tr>
+                <tr>
+                    <td>Database Systems</td>
+                    <td>20</td>
+                    <td>20</td>
+                    <td><span class="attendance-percent percent-high">100%</span></td>
+                </tr>
+                <tr>
+                    <td>Operating Systems</td>
+                    <td>17</td>
+                    <td>20</td>
+                    <td><span class="attendance-percent percent-medium">85%</span></td>
+                </tr>
+                <tr>
+                    <td>Computer Networks</td>
+                    <td>14</td>
+                    <td>18</td>
+                    <td><span class="attendance-percent percent-medium">78%</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <div id="results" class="section">
+        <h2 class="section-title"><i class="fas fa-chart-line"></i> Results</h2>
+        
+        <table class="results-table">
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Internal</th>
+                    <th>External</th>
+                    <th>Total</th>
+                    <th>Grade</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Data Structures</td>
+                    <td>45</td>
+                    <td>78</td>
+                    <td>123</td>
+                    <td><span class="grade grade-a">A</span></td>
+                </tr>
+                <tr>
+                    <td>Algorithms</td>
+                    <td>42</td>
+                    <td>75</td>
+                    <td>117</td>
+                    <td><span class="grade grade-b">B+</span></td>
+                </tr>
+                <tr>
+                    <td>Database Systems</td>
+                    <td>48</td>
+                    <td>85</td>
+                    <td>133</td>
+                    <td><span class="grade grade-a">A+</span></td>
+                </tr>
+                <tr>
+                    <td>Operating Systems</td>
+                    <td>40</td>
+                    <td>72</td>
+                    <td>112</td>
+                    <td><span class="grade grade-b">B</span></td>
+                </tr>
+                <tr>
+                    <td>Computer Networks</td>
+                    <td>38</td>
+                    <td>68</td>
+                    <td>106</td>
+                    <td><span class="grade grade-c">C+</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <div id="settings" class="section">
+        <h2 class="section-title"><i class="fas fa-cog"></i> Settings</h2>
+        
+        <form class="settings-form">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" value="rahul_pandey" readonly>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" value="rahul.pandey@university.edu">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">New Password</label>
+                <input type="password" id="password" placeholder="Enter new password">
+            </div>
+            
+            <div class="form-group">
+                <label for="confirm-password">Confirm Password</label>
+                <input type="password" id="confirm-password" placeholder="Confirm new password">
+            </div>
+            
+            <div class="form-group">
+                <label for="theme">Theme Preference</label>
+                <select id="theme">
+                    <option value="light">Light</option>
+                    <option value="dark">Dark</option>
+                    <option value="system">System Default</option>
+                </select>
+            </div>
+            
+            <div class="form-actions">
+                <button type="button" class="btn btn-outline">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const timetables = {
+        "CSE": {
+            "Monday": [
+                { time: "8:00 AM - 9:30 AM", subject: "Data Structures", room: "CS-101", faculty: "Prof. Smith" },
+                { time: "10:00 AM - 11:30 AM", subject: "Algorithms", room: "CS-102", faculty: "Prof. Johnson" },
+                { time: "12:00 PM - 1:30 PM", subject: "Database Systems", room: "CS-103", faculty: "Prof. Williams" },
+                { time: "2:00 PM - 3:30 PM", subject: "Operating Systems", room: "CS-104", faculty: "Prof. Brown" }
+            ]
+        }
+    };
+
+    function updateTimetable() {
+        const dept = document.getElementById("departmentSelect").value;
+        const day = document.getElementById("daySelect").value;
+        const schedule = timetables[dept]?.[day] || [{ time: "No classes scheduled", subject: "-", room: "-", faculty: "-" }];
+
+        document.getElementById("timetableContent").innerHTML = `
+            <table class="timetable">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Subject</th>
+                        <th>Location</th>
+                        <th>Faculty</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${schedule.map(item => `
+                        <tr>
+                            <td class="class-time">${item.time}</td>
+                            <td>
+                                <div class="class-subject">${item.subject}</div>
+                                ${item.faculty ? `<div class="class-details">${item.room} | ${item.faculty}</div>` : ''}
+                            </td>
+                            <td>${item.room}</td>
+                            <td>${item.faculty}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>`;
+    }
+
+    // Sidebar navigation
+    document.querySelectorAll('.menu-item').forEach(item => {
+        item.addEventListener('click', function() {
+            document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            this.classList.add('active');
+            document.getElementById(this.dataset.section).classList.add('active');
+
+            // Update page title
+            const pageTitle = document.querySelector('.page-title');
+            pageTitle.textContent = this.dataset.section === 'home' ? 'Dashboard' : this.textContent.trim();
+        });
+    });
+
+    // Timetable filter listeners
+    document.getElementById("departmentSelect").addEventListener("change", updateTimetable);
+    document.getElementById("daySelect").addEventListener("change", updateTimetable);
+    document.addEventListener("DOMContentLoaded", updateTimetable);
+
+    // Settings form buttons
+    document.querySelector(".settings-form").addEventListener("submit", function(e) {
+        e.preventDefault();
+        alert("✅ Settings saved successfully!");
+    });
+
+    document.querySelector(".btn-outline").addEventListener("click", function() {
+        if (confirm("Are you sure you want to cancel changes?")) {
+            document.querySelector(".settings-form").reset();
+        }
+    });
+</script>
+
+
+</body>
+</html>
