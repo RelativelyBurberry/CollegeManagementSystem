@@ -1659,7 +1659,27 @@
     </div>
 
     <script>
+        const token = localStorage.getItem("token");
+        const role = localStorage.getItem("role");
+
+        if (!token || role !== "faculty") {
+            window.location.href = "login.html";
+        }
+
         // Sample data for the faculty dashboard
+        async function loadFacultyProfile() {
+        const token = localStorage.getItem("token");
+
+        const res = await fetch("http://localhost:8000/faculty/me", {
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        });
+
+        const faculty = await res.json();
+        console.log(faculty);
+        }
+
         const timetables = {
             "CSE": {
                 "Monday": [
