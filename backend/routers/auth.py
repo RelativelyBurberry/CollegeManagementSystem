@@ -13,6 +13,7 @@ router = APIRouter(
     tags=["Authentication"]
 )
 
+
 # =====================================================
 # REGISTER (SIGN UP)
 # =====================================================
@@ -73,3 +74,4 @@ def login(
         "token_type": "bearer",
         "role": user.role
     }
+

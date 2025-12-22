@@ -3,7 +3,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import engine, Base
-from routers import auth, student, faculty
+from routers import auth, student, faculty, admin
 
 # =====================================================
 # CREATE FASTAPI APP
@@ -35,6 +35,7 @@ Base.metadata.create_all(bind=engine)
 app.include_router(auth.router)
 app.include_router(student.router)
 app.include_router(faculty.router)
+app.include_router(admin.router)
 
 # =====================================================
 # ROOT ENDPOINT
