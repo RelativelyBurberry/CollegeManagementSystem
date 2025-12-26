@@ -51,6 +51,12 @@ class StudentResponse(StudentBase):
     class Config:
         orm_mode = True
 
+class StudentDashboard(BaseModel):
+    courses: int
+    attendance_percentage: int
+    pending_assignments: int
+    days_to_exam: int
+
 
 # =====================================================
 # FACULTY SCHEMAS
@@ -72,3 +78,10 @@ class FacultyResponse(FacultyBase):
 
     class Config:
         orm_mode = True
+
+class FacultyDashboard(BaseModel):
+    courses: int
+    students: int
+    pending_papers: int
+    meetings_today: int
+

@@ -625,38 +625,11 @@
     
     <div id="home" class="section active">
         <div class="welcome-card">
-            <h2 class="welcome-title">Welcome back, Rahul!</h2>
-            <p class="welcome-text">You have 3 classes today. Your next class is Data Structures at 10:00 AM in CS-101.</p>
+         <div class="card">
+            <h3>Courses</h3>
+            <p id="coursesCount">0</p>
         </div>
-        
-        <div class="stats-container">
-            <div class="stat-card">
-                <div class="stat-icon blue">
-                    <i class="fas fa-book-open"></i>
-                </div>
-                <div>
-                    <div class="stat-value">12</div>
-                    <div class="stat-label">Current Courses</div>
-                </div>
-            </div>
-            
-            <div class="stat-card">
-                <div class="stat-icon green">
-                    <i class="fas fa-percentage"></i>
-                </div>
-                <div>
-                    <div class="stat-value">92%</div>
-                    <div class="stat-label">Attendance</div>
-                </div>
-            </div>
-            
-            <div class="stat-card">
-                <div class="stat-icon pink">
-                    <i class="fas fa-tasks"></i>
-                </div>
-                <div>
-                    <div class="stat-value">5</div>
-                    <div class="stat-label">Pending Assignments</div>
+
                 </div>
             </div>
             
@@ -887,7 +860,8 @@
 
 <script>
     const token = localStorage.getItem("token");
-    if (!token) {
+    const role = localStorage.getItem("role");
+    if (!token || role !== "student") {
         window.location.href = "login.html";
     }
 
@@ -908,6 +882,24 @@
         const student = await res.json();
         console.log(student); // 👈 verify data
     }
+
+    async function loadStudentDashboard() {
+        const res = await fetch("http://127.0.0.1:8000/students/dashboard", {
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        });
+
+        const data = await res.json();
+
+        // Inject into UI
+        document.getElementById("coursesCount").innerText = data.courses;
+        document.getElementById("attendancePercent").innerText = data.attendance_percentage + "%";
+        document.getElementById("pendingAssignments").innerText = data.pending_assignments;
+        document.getElementById("daysToExam").innerText = data.days_to_exam;
+    }
+
+    document.addEventListener("DOMContentLoaded", loadStudentDashboard);
 
     const timetables = {
         "CSE": {

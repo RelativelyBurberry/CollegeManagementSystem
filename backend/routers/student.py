@@ -4,6 +4,8 @@ from sqlalchemy.orm import Session
 from database import get_db
 from models import Student, User
 from auth import get_current_user, get_current_student
+from schemas import StudentDashboard
+
 
 
 router = APIRouter(
@@ -44,3 +46,16 @@ def get_my_profile(
 
         return student
 
+
+@router.get("/dashboard", response_model=StudentDashboard)
+def student_dashboard(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_student)
+):
+    # TEMP values (we’ll replace with real logic later)
+    return {
+        "courses": 5,
+        "attendance_percentage": 92,
+        "pending_assignments": 3,
+        "days_to_exam": 14
+    }

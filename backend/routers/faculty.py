@@ -5,6 +5,7 @@ from database import get_db
 from models import Faculty, User
 from auth import get_current_user,  get_current_faculty
 
+from schemas import FacultyDashboard
 
 router = APIRouter(
     prefix="/faculty",
@@ -43,3 +44,16 @@ def get_my_profile(
             raise HTTPException(status_code=404, detail="Faculty profile not found")
 
         return faculty
+
+@router.get("/dashboard", response_model=FacultyDashboard)
+def faculty_dashboard(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_faculty)
+):
+    # TEMP stub data (same idea as student)
+    return {
+        "courses": 4,
+        "students": 120,
+        "pending_papers": 8,
+        "meetings_today": 2
+    }
