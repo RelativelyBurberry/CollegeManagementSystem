@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dr. Rohan  | Faculty Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/faculty.css">
+</head>
+<body>
+    <!-- Floating Background Elements -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <div class="profile">
+            <div class="profile-img">KN</div>
+            <h3 class="profile-name">Dr. Rohan
+
+            </h3>
+            <span class="profile-role">Professor of Computer Science</span>
+        </div>
+        
+        <ul class="menu">
+            <li class="menu-item active" data-section="home">
+                <a href="#"><i class="fas fa-home"></i> Dashboard</a>
+            </li>
+            <li class="menu-item" data-section="timetable">
+                <a href="#"><i class="fas fa-calendar-alt"></i> Teaching Schedule</a>
+            </li>
+            <li class="menu-item" data-section="attendance">
+                <a href="#"><i class="fas fa-clipboard-check"></i> Class Attendance</a>
+            </li>
+            <li class="menu-item" data-section="results">
+                <a href="#"><i class="fas fa-chart-line"></i> Grade Management</a>
+            </li>
+            <li class="menu-item" data-section="settings">
+                <a href="#"><i class="fas fa-cog"></i> Settings</a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="header">
+            <h1 class="page-title">Faculty Dashboard</h1>
+            <div class="user-actions">
+                <button class="notification-btn">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">3</span>
+                </button>
+                <button class="user-btn">
+                    <i class="fas fa-user"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Home Section -->
+        <div id="home" class="section active">
+            <div class="welcome-card">
+                <h2 class="welcome-title">Welcome back, Dr. Rohan</h2>
+                <p class="welcome-text">You have 3 classes scheduled for today. Your next lecture is Data Structures at 10:00 AM in CS-101. Don't forget about the department meeting at 3:00 PM.</p>
+                <div class="welcome-actions">
+                    <button class="welcome-btn welcome-btn-primary" id="viewScheduleBtn">
+                        <i class="fas fa-calendar-check"></i> View Schedule
+                    </button>
+                    <button class="welcome-btn welcome-btn-outline" id="setReminderBtn">
+                        <i class="fas fa-bell"></i> Set Reminder
+                    </button>
+                </div>
+            </div>
+            
+            <div class="stats-container">
+                <div class="stat-card" id="coursesCard">
+                    <div class="stat-icon blue">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <div>
+                        <div class="stat-value">5</div>
+                        <div class="stat-label">Courses Teaching</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card" id="studentsCard">
+                    <div class="stat-icon green">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div>
+                        <div class="stat-value">142</div>
+                        <div class="stat-label">Students</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card" id="papersCard">
+                    <div class="stat-icon orange">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <div>
+                        <div class="stat-value">8</div>
+                        <div class="stat-label">Papers to Grade</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card" id="meetingsCard">
+                    <div class="stat-icon purple">
+                        <i class="fas fa-calendar-day"></i>
+                    </div>
+                    <div>
+                        <div class="stat-value">3</div>
+                        <div class="stat-label">Meetings Today</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2 class="section-title"><i class="fas fa-calendar-day"></i> Today's Schedule</h2>
+                <div class="timetable-container">
+                    <table class="timetable">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Subject</th>
+                                <th>Location</th>
+                                <th>Batch</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="class-time">9:00 AM - 10:30 AM</td>
+                                <td>
+                                    <div class="class-subject">Data Structures</div>
+                                    <div class="class-details">CS-201 | Prof. Rohan</div>
+                                </td>
+                                <td>CS-101</td>
+                                <td>Batch A</td>
+                            </tr>
+                            <tr>
+                                <td class="class-time">11:00 AM - 12:30 PM</td>
+                                <td>
+                                    <div class="class-subject">Advanced Algorithms</div>
+                                    <div class="class-details">CS-301 | Prof. Rohan</div>
+                                </td>
+                                <td>CS-102</td>
+                                <td>Batch B</td>
+                            </tr>
+                            <tr>
+                                <td class="class-time">2:00 PM - 3:30 PM</td>
+                                <td>
+                                    <div class="class-subject">Research Seminar</div>
+                                    <div class="class-details">CS-501 | Prof. Rohan</div>
+                                </td>
+                                <td>CS-103</td>
+                                <td>PhD Candidates</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Timetable Section -->
+        <div id="timetable" class="section">
+            <h2 class="section-title"><i class="fas fa-calendar-alt"></i> Teaching Schedule</h2>
+            
+            <div class="filter-container">
+                <div class="select-box">
+                    <label for="departmentSelect">Department</label>
+                    <select id="departmentSelect">
+                        <option value="CSE">Computer Science (CSE)</option>
+                        <option value="EEE">Electrical Engineering (EEE)</option>
+                    </select>
+                </div>
+                
+                <div class="select-box">
+                    <label for="daySelect">Day</label>
+                    <select id="daySelect">
+                        <option value="Monday">Monday</option>
+                        <option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option>
+                        <option value="Thursday">Thursday</option>
+                        <option value="Friday">Friday</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="timetable-container" id="timetableContent">
+                <!-- Timetable content will be loaded here by JavaScript -->
+            </div>
+        </div>
+        
+        <!-- Attendance Section -->
+        <div id="attendance" class="section">
+            <h2 class="section-title"><i class="fas fa-clipboard-check"></i> Class Attendance</h2>
+            
+            <div class="filter-container">
+                <div class="select-box">
+                    <label for="classSelect">Select Class</label>
+                    <select id="classSelect">
+                        <option value="CS201">Data Structures (CS-201)</option>
+                        <option value="CS301">Advanced Algorithms (CS-301)</option>
+                        <option value="CS401">Research Methods (CS-401)</option>
+                        <option value="CS501">Thesis Guidance (CS-501)</option>
+                    </select>
+                </div>
+                
+                <div class="select-box">
+                    <label for="attendanceDate">Date</label>
+                    <input type="date" id="attendanceDate" class="form-control">
+                </div>
+            </div>
+            
+            <div class="attendance-container" id="attendanceContent">
+                <!-- Attendance content will be loaded here by JavaScript -->
+            </div>
+        </div>
+        
+        <!-- Results Section -->
+        <div id="results" class="section">
+            <h2 class="section-title"><i class="fas fa-chart-line"></i> Grade Management</h2>
+            
+            <div class="filter-container">
+                <div class="select-box">
+                    <label for="resultClassSelect">Select Class</label>
+                    <select id="resultClassSelect">
+                        <option value="CS201">Data Structures (CS-201)</option>
+                        <option value="CS301">Advanced Algorithms (CS-301)</option>
+                        <option value="CS401">Research Methods (CS-401)</option>
+                        <option value="CS501">Thesis Guidance (CS-501)</option>
+                    </select>
+                </div>
+                
+                <div class="select-box">
+                    <label for="examType">Exam Type</label>
+                    <select id="examType">
+                        <option value="midterm">Midterm Exam</option>
+                        <option value="final">Final Exam</option>
+                        <option value="assignment">Assignment</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="results-container" id="resultsContent">
+                <!-- Results content will be loaded here by JavaScript -->
+            </div>
+        </div>
+        
+        <!-- Settings Section -->
+        <div id="settings" class="section">
+            <h2 class="section-title"><i class="fas fa-cog"></i> Faculty Settings</h2>
+            
+            <form class="settings-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" value="DR Rohan" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" value="rohan2024@university.edu">
+                </div>
+                
+                <div class="form-group">
+                    <label for="department">Department</label>
+                    <input type="text" id="department" value="Computer Science" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">New Password</label>
+                    <input type="password" id="password" placeholder="Enter new password">
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirm-password">Confirm Password</label>
+                    <input type="password" id="confirm-password" placeholder="Confirm new password">
+                </div>
+                
+                <div class="form-group">
+                    <label for="theme">Theme Preference</label>
+                    <select id="theme">
+                        <option value="light">Light</option>
+                        <option value="dark">Dark</option>
+                        <option value="system">System Default</option>
+                    </select>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Course Details -->
+    <div class="modal" id="coursesModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Courses Teaching</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Here are the courses you're currently teaching:</p>
+                <ul style="list-style-type: none; margin-top: 12px;">
+                    <li style="padding: 8px; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center;">
+                        <i class="fas fa-book" style="margin-right: 8px; color: var(--primary);"></i>
+                        <span>CS-201: Data Structures</span>
+                    </li>
+                    <li style="padding: 8px; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center;">
+                        <i class="fas fa-book" style="margin-right: 8px; color: var(--primary);"></i>
+                        <span>CS-301: Advanced Algorithms</span>
+                    </li>
+                    <li style="padding: 8px; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center;">
+                        <i class="fas fa-book" style="margin-right: 8px; color: var(--primary);"></i>
+                        <span>CS-401: Research Methods</span>
+                    </li>
+                    <li style="padding: 8px; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center;">
+                        <i class="fas fa-book" style="margin-right: 8px; color: var(--primary);"></i>
+                        <span>CS-501: Thesis Guidance</span>
+                    </li>
+                    <li style="padding: 8px; display: flex; align-items: center;">
+                        <i class="fas fa-book" style="margin-right: 8px; color: var(--primary);"></i>
+                        <span>EEE-101: Introduction to Electrical Engineering</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary close-modal">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Students -->
+    <div class="modal" id="studentsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Students Enrolled</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Total students across all your courses: <strong>142</strong></p>
+                <div style="margin-top: 15px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span>CS-201: Data Structures</span>
+                        <span><strong>45 students</strong></span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span>CS-301: Advanced Algorithms</span>
+                        <span><strong>38 students</strong></span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span>CS-401: Research Methods</span>
+                        <span><strong>25 students</strong></span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span>CS-501: Thesis Guidance</span>
+                        <span><strong>12 students</strong></span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>EEE-101: Intro to EE</span>
+                        <span><strong>22 students</strong></span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary close-modal">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Papers to Grade -->
+    <div class="modal" id="papersModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Papers to Grade</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>You have <strong>8 papers</strong> waiting to be graded:</p>
+                <div style="margin-top: 15px;">
+                    <div style="background: rgba(0,0,0,0.02); padding: 12px; border-radius: 8px; margin-bottom: 8px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                            <strong>CS-301: Midterm Exam</strong>
+                            <span>3 papers</span>
+                        </div>
+                        <div style="font-size: 0.8rem; color: #666;">Due: May 15, 2023</div>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.02); padding: 12px; border-radius: 8px; margin-bottom: 8px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                            <strong>CS-201: Assignment 3</strong>
+                            <span>2 papers</span>
+                        </div>
+                        <div style="font-size: 0.8rem; color: #666;">Due: May 18, 2023</div>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.02); padding: 12px; border-radius: 8px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                            <strong>EEE-101: Final Project</strong>
+                            <span>3 papers</span>
+                        </div>
+                        <div style="font-size: 0.8rem; color: #666;">Due: May 20, 2023</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary close-modal">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Meetings -->
+    <div class="modal" id="meetingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Today's Meetings</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>You have <strong>3 meetings</strong> scheduled for today:</p>
+                <div style="margin-top: 15px;">
+                    <div style="background: rgba(0,0,0,0.02); padding: 12px; border-radius: 8px; margin-bottom: 8px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                            <strong>Faculty Meeting</strong>
+                            <span>10:00 AM - 11:00 AM</span>
+                        </div>
+                        <div style="font-size: 0.8rem; color: #666;">Location: Dean's Office</div>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.02); padding: 12px; border-radius: 8px; margin-bottom: 8px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                            <strong>Research Committee</strong>
+                            <span>1:00 PM - 2:30 PM</span>
+                        </div>
+                        <div style="font-size: 0.8rem; color: #666;">Location: Conference Room B</div>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.02); padding: 12px; border-radius: 8px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                            <strong>Student Advising</strong>
+                            <span>3:00 PM - 4:00 PM</span>
+                        </div>
+                        <div style="font-size: 0.8rem; color: #666;">Location: Your Office</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary close-modal">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Reminder -->
+    <div class="modal" id="reminderModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Set Reminder</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="reminderTitle">Reminder Title</label>
+                    <input type="text" id="reminderTitle" placeholder="Enter reminder title" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="reminderDate">Date & Time</label>
+                    <input type="datetime-local" id="reminderDate" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="reminderNotes">Notes</label>
+                    <textarea id="reminderNotes" rows="3" class="form-control" placeholder="Additional notes"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline close-modal">Cancel</button>
+                <button class="btn btn-primary" id="saveReminderBtn">
+                    <i class="fas fa-bell"></i> Set Reminder
+                </button>
+            </div>
+        </div>
+    </div>
+
+    
+        
+    <script type="module" src="js/faculty.js"></script>
+
+</body>
+</html>

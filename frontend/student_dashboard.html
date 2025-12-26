@@ -1,0 +1,316 @@
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Rahul Pandey | Student Portal</title>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+        <link rel="stylesheet" href="css/student.css">
+    </head>
+    <body>
+
+    <div class="sidebar">
+        <div class="profile">
+            <img src="https://ui-avatars.com/api/?name=Rahul+Pandey&background=4361ee&color=fff&size=128" alt="Profile" class="profile-img">
+            <h3 class="profile-name">Rahul Pandey</h3>
+            <span class="profile-role">Computer Science Student</span>
+        </div>
+        
+        <ul class="menu">
+            <li class="menu-item active" data-section="home">
+                <a href="#"><i class="fas fa-home"></i> Home</a>
+            </li>
+            <li class="menu-item" data-section="timetable">
+                <a href="#"><i class="fas fa-calendar-alt"></i> Time Table</a>
+            </li>
+            <li class="menu-item" data-section="attendance">
+                <a href="#"><i class="fas fa-clipboard-check"></i> Attendance</a>
+            </li>
+            <li class="menu-item" data-section="results">
+                <a href="#"><i class="fas fa-chart-line"></i> Results</a>
+            </li>
+            <li class="menu-item" data-section="settings">
+                <a href="#"><i class="fas fa-cog"></i> Settings</a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h1 class="page-title" id="pageTitle">Dashboard</h1>
+            <div class="user-actions">
+                <div class="notification-btn">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">3</span>
+                </div>
+                <div class="user-btn">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div  class="stats-container">
+            <div class="stat-card">
+            <div class="stat-icon blue">
+                <i class="fas fa-book-open"></i>
+            </div>
+            <div>
+                <div class="stat-value" id="coursesCount"></div>
+                <div class = "stat-label">Courses</div>
+            </div>
+            </div>
+            
+                
+                
+                <div class="stat-card">
+                    <div class="stat-icon green">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                    <div>
+                        <div class="stat-value" id="attendancePercent"></div>
+                        <div class="stat-label">Attendance</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon pink">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <div>
+                        <div class="stat-value" id="pendingAssignments"></div>
+                        <div class="stat-label">Pending Assignments</div>
+                    </div>
+                </div>
+                
+                
+                <div class="stat-card">
+                    <div class="stat-icon purple">
+                        <i class="fas fa-calendar-day"></i>
+                    </div>
+                    <div>
+                        <div class="stat-value" id="daysToExam"></div>
+                        <div class="stat-label">Days Until Exams</div>
+                    </div>
+                </div>
+        </div>
+    <div class="content-panel"> 
+            <div class="section">
+                <h2 class="section-title"><i class="fas fa-calendar-day"></i> Today's Schedule</h2>
+                <table class="timetable">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Subject</th>
+                            <th>Location</th>
+                            <th>Faculty</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="class-time">9:00 AM - 10:30 AM</td>
+                            <td>
+                                <div class="class-subject">Data Structures</div>
+                                <div class="class-details">CS-201 | Prof. Smith</div>
+                            </td>
+                            <td>CS-101</td>
+                            <td>Prof. Smith</td>
+                        </tr>
+                        <tr>
+                            <td class="class-time">11:00 AM - 12:30 PM</td>
+                            <td>
+                                <div class="class-subject">Algorithms</div>
+                                <div class="class-details">CS-202 | Prof. Johnson</div>
+                            </td>
+                            <td>CS-102</td>
+                            <td>Prof. Johnson</td>
+                        </tr>
+                        <tr>
+                            <td class="class-time">2:00 PM - 3:30 PM</td>
+                            <td>
+                                <div class="class-subject">Database Systems</div>
+                                <div class="class-details">CS-203 | Prof. Williams</div>
+                            </td>
+                            <td>CS-103</td>
+                            <td>Prof. Williams</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div id="timetable" class="section">
+            <h2 class="section-title"><i class="fas fa-calendar-alt"></i> Time Table</h2>
+            
+            <div class="filter-container">
+                <div class="select-box">
+                    <label for="departmentSelect">Department</label>
+                    <select id="departmentSelect">
+                        <option value="CSE">Computer Science (CSE)</option>
+                        <option value="EEE">Electrical Engineering (EEE)</option>
+                        <option value="ME">Mechanical Engineering (ME)</option>
+                        <option value="CE">Civil Engineering (CE)</option>
+                    </select>
+                </div>
+                
+                <div class="select-box">
+                    <label for="daySelect">Day</label>
+                    <select id="daySelect">
+                        <option value="Monday">Monday</option>
+                        <option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option>
+                        <option value="Thursday">Thursday</option>
+                        <option value="Friday">Friday</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div id="timetableContent"></div>
+        </div>
+        
+        <div id="attendance" class="section">
+            <h2 class="section-title"><i class="fas fa-clipboard-check"></i> Attendance</h2>
+            
+            <table class="attendance-table">
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Attended</th>
+                        <th>Total</th>
+                        <th>Percentage</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Data Structures</td>
+                        <td>18</td>
+                        <td>20</td>
+                        <td><span class="attendance-percent percent-high">90%</span></td>
+                    </tr>
+                    <tr>
+                        <td>Algorithms</td>
+                        <td>15</td>
+                        <td>18</td>
+                        <td><span class="attendance-percent percent-high">83%</span></td>
+                    </tr>
+                    <tr>
+                        <td>Database Systems</td>
+                        <td>20</td>
+                        <td>20</td>
+                        <td><span class="attendance-percent percent-high">100%</span></td>
+                    </tr>
+                    <tr>
+                        <td>Operating Systems</td>
+                        <td>17</td>
+                        <td>20</td>
+                        <td><span class="attendance-percent percent-medium">85%</span></td>
+                    </tr>
+                    <tr>
+                        <td>Computer Networks</td>
+                        <td>14</td>
+                        <td>18</td>
+                        <td><span class="attendance-percent percent-medium">78%</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div id="results" class="section">
+            <h2 class="section-title"><i class="fas fa-chart-line"></i> Results</h2>
+            
+            <table class="results-table">
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Internal</th>
+                        <th>External</th>
+                        <th>Total</th>
+                        <th>Grade</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Data Structures</td>
+                        <td>45</td>
+                        <td>78</td>
+                        <td>123</td>
+                        <td><span class="grade grade-a">A</span></td>
+                    </tr>
+                    <tr>
+                        <td>Algorithms</td>
+                        <td>42</td>
+                        <td>75</td>
+                        <td>117</td>
+                        <td><span class="grade grade-b">B+</span></td>
+                    </tr>
+                    <tr>
+                        <td>Database Systems</td>
+                        <td>48</td>
+                        <td>85</td>
+                        <td>133</td>
+                        <td><span class="grade grade-a">A+</span></td>
+                    </tr>
+                    <tr>
+                        <td>Operating Systems</td>
+                        <td>40</td>
+                        <td>72</td>
+                        <td>112</td>
+                        <td><span class="grade grade-b">B</span></td>
+                    </tr>
+                    <tr>
+                        <td>Computer Networks</td>
+                        <td>38</td>
+                        <td>68</td>
+                        <td>106</td>
+                        <td><span class="grade grade-c">C+</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div id="settings" class="section">
+            <h2 class="section-title"><i class="fas fa-cog"></i> Settings</h2>
+            
+            <form class="settings-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" value="rahul_pandey" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" value="rahul.pandey@university.edu">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">New Password</label>
+                    <input type="password" id="password" placeholder="Enter new password">
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirm-password">Confirm Password</label>
+                    <input type="password" id="confirm-password" placeholder="Confirm new password">
+                </div>
+                
+                <div class="form-group">
+                    <label for="theme">Theme Preference</label>
+                    <select id="theme">
+                        <option value="light">Light</option>
+                        <option value="dark">Dark</option>
+                        <option value="system">System Default</option>
+                    </select>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    </div>
+
+
+    <script type="module" src="js/student.js" defer></script>
+    </body>
+    </html>

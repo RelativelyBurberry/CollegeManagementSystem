@@ -9,6 +9,11 @@ from schemas import (
     FacultyCreate
 )
 from auth import get_current_user, hash_password
+from models import Department, Course
+from schemas import DepartmentCreate, CourseCreate
+
+from models import Enrollment, FacultyCourse
+from schemas import EnrollmentCreate, FacultyCourseCreate
 
 
 router = APIRouter(
@@ -172,3 +177,100 @@ def delete_faculty(
 
     db.delete(faculty)
     db.commit()
+
+
+@router.post("/departments", status_code=201)
+def create_department(
+    dept: DepartmentCreate,
+    db: Session = Depends(get_db),
+    _: User = Depends(get_current_admin)
+):
+    department = Department(code=dept.code, name=dept.name)
+    db.add(department)
+    db.commit()
+    db.refresh(department)
+    return department
+
+
+@router.post("/courses", status_code=201)
+def create_course(
+    course: CourseCreate,
+    db: Session = Depends(get_db),
+    _: User = Depends(get_current_admin)
+):
+    course_obj = Course(**course.dict())
+    db.add(course_obj)
+    db.commit()
+    db.refresh(course_obj)
+    return course_obj
+
+
+@router.post("/assign-faculty", status_code=201)
+def assign_faculty_to_course(
+    data: FacultyCourseCreate,
+    db: Session = Depends(get_db),
+    _: User = Depends(get_current_admin)
+):
+    assignment = FacultyCourse(**data.dict())
+    db.add(assignment)
+    db.commit()
+    db.refresh(assignment)
+    return assignment
+
+
+@router.post("/enroll-student", status_code=201)
+def enroll_student(
+    data: EnrollmentCreate,
+    db: Session = Depends(get_db),
+    _: User = Depends(get_current_admin)
+):
+    student = db.query(Student).filter(Student.id == data.student_id).first()
+    course = db.query(Course).filter(Course.id == data.course_id).first()
+
+    if not student or not course:
+        raise HTTPException(status_code=400, detail="Invalid student or course ID")
+
+    existing = db.query(Enrollment).filter(
+        Enrollment.student_id == data.student_id,
+        Enrollment.course_id == data.course_id
+    ).first()
+
+    if existing:
+        raise HTTPException(status_code=400, detail="Student already enrolled")
+
+    enrollment = Enrollment(**data.dict())
+    db.add(enrollment)
+    db.commit()
+    db.refresh(enrollment)
+
+    return enrollment
+
+
+@router.post("/assign-faculty", status_code=201)
+def assign_faculty_to_course(
+        data: FacultyCourseCreate,
+        db: Session = Depends(get_db),
+        _: User = Depends(get_current_admin)
+    ):
+
+    faculty = db.query(Faculty).filter(Faculty.id == data.faculty_id).first()
+    course = db.query(Course).filter(Course.id == data.course_id).first()
+
+    if not faculty or not course:
+        raise HTTPException(status_code=400, detail="Invalid faculty or course ID")
+
+    existing = db.query(FacultyCourse).filter(
+        FacultyCourse.faculty_id == data.faculty_id,
+        FacultyCourse.course_id == data.course_id
+    ).first()
+
+    if existing:
+        raise HTTPException(status_code=400, detail="Faculty already assigned to course")
+
+    assignment = FacultyCourse(**data.dict())
+    db.add(assignment)
+    db.commit()
+    db.refresh(assignment)
+
+    return assignment
+

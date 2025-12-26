@@ -14,7 +14,7 @@ from database import get_db
 from models import User
 
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 # =====================================================
 # CONFIG
@@ -86,8 +86,6 @@ def decode_access_token(token: str) -> dict:
     except JWTError:
         return {}
 
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 def get_current_user(
         token: str = Depends(oauth2_scheme),
