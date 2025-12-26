@@ -27,6 +27,8 @@ requireRole("student");
     if (avatar) {
         avatar.src = `https://ui-avatars.com/api/?name=${initials}&background=4361ee&color=fff&size=128`;
     }
+
+    document.title = `${student.name} | Student Portal`;
 }
 
 
