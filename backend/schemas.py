@@ -197,4 +197,31 @@ class GradeCreate(BaseModel):
     grade: str
 
 
+# =====================================================
+# TIMETABLE SCHEMAS
+# =====================================================
+
+class TimetableCreate(BaseModel):
+    course_id: int
+    day_of_week: str      # Monday, Tuesday, etc
+    start_time: str       # HH:MM
+    end_time: str         # HH:MM
+    room: str | None = None
+
+
+# =====================================================
+# TIMETABLE SCHEMAS
+# =====================================================
+
+class TimetableResponse(BaseModel):
+    day_of_week: str
+    start_time: str
+    end_time: str
+    room: str | None
+    subject: str
+    faculty: str | None
+    model_config = {
+        "from_attributes": True
+    }
+
 

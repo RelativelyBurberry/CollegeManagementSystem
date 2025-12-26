@@ -270,3 +270,23 @@ def assign_final_grade(
     return grade
 
 
+from schemas import TimetableCreate
+from models import Timetable
+
+@router.post("/timetable", status_code=201)
+def create_timetable_entry(
+    data: TimetableCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    if current_user.role not in ["admin", "faculty"]:
+        raise HTTPException(status_code=403, detail="Not authorized")
+
+    entry = Timetable(**data.dict())
+    db.add(entry)
+    db.commit()
+    db.refresh(entry)
+
+    return entry
+
+

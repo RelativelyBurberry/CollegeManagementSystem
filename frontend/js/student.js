@@ -28,7 +28,24 @@ requireRole("student");
         avatar.src = `https://ui-avatars.com/api/?name=${initials}&background=4361ee&color=fff&size=128`;
     }
 
+    // Populate Department dropdown with student's department
+    const deptSelect = document.getElementById("departmentSelect");
+
+    if (deptSelect && student.department) {
+        deptSelect.innerHTML = ""; // clear placeholder
+
+        const option = document.createElement("option");
+        option.value = student.department;
+        option.textContent = student.department;
+        option.selected = true;
+
+        deptSelect.appendChild(option);
+        deptSelect.disabled = true; // lock it
+    }
+    
     document.title = `${student.name} | Student Portal`;
+
+
 }
 
 
@@ -68,6 +85,56 @@ requireRole("student");
             grade ? grade.grade : "Not Released";
     }
 
+    async function loadTimetable() {
+        const container = document.getElementById("timetableContent");
+        const daySelect = document.getElementById("daySelect");
+
+        if (!container || !daySelect) return; // page guard
+
+        const data = await apiGet("http://127.0.0.1:8000/students/my-timetable");
+
+        function render(day) {
+            const rows = data.filter(d => d.day_of_week === day);
+
+            if (!rows.length) {
+                container.innerHTML = "<p>No classes scheduled.</p>";
+                return;
+            }
+
+            container.innerHTML = `
+                <table class="timetable">
+                   <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Subject</th>
+                            <th>Location</th>
+                            <th>Faculty</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${rows.map(r => `
+                            <tr>
+                                <td>${r.start_time} - ${r.end_time}</td>
+                                <td>${r.subject}</td>
+                                <td>${r.room ?? "-"}</td>
+                                <td>${r.faculty ?? "-"}</td>
+                            </tr>
+                        `).join("")}
+                    </tbody>
+
+                </table>
+            `;
+        }
+
+        // initial render
+        render(daySelect.value);
+
+        // re-render on day change
+        daySelect.addEventListener("change", () => {
+            render(daySelect.value);
+        });
+    }
+
     async function loadStudentDashboard() {
         alert("dashboard function called");
         const data = await apiGet("http://127.0.0.1:8000/students/dashboard");
@@ -96,59 +163,22 @@ requireRole("student");
         loadStudentProfile();
         loadStudentDashboard();
         loadStudentCourses();
+        loadTimetable();
         const courseSelect = document.getElementById("courseSelect");
 
             if (courseSelect) {
             courseSelect.addEventListener("change", async () => {
                 await loadAttendance();
                 await loadFinalGrade();
+                
             });
         }
     });
 
     
 
-    const timetables = {
-        "CSE": {
-            "Monday": [
-                { time: "8:00 AM - 9:30 AM", subject: "Data Structures", room: "CS-101", faculty: "Prof. Smith" },
-                { time: "10:00 AM - 11:30 AM", subject: "Algorithms", room: "CS-102", faculty: "Prof. Johnson" },
-                { time: "12:00 PM - 1:30 PM", subject: "Database Systems", room: "CS-103", faculty: "Prof. Williams" },
-                { time: "2:00 PM - 3:30 PM", subject: "Operating Systems", room: "CS-104", faculty: "Prof. Brown" }
-            ]
-        }
-    };
+    
 
-    function updateTimetable() {
-        const dept = document.getElementById("departmentSelect").value;
-        const day = document.getElementById("daySelect").value;
-        const schedule = timetables[dept]?.[day] || [{ time: "No classes scheduled", subject: "-", room: "-", faculty: "-" }];
-
-        document.getElementById("timetableContent").innerHTML = `
-            <table class="timetable">
-                <thead>
-                    <tr>
-                        <th>Time</th>
-                        <th>Subject</th>
-                        <th>Location</th>
-                        <th>Faculty</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${schedule.map(item => `
-                        <tr>
-                            <td class="class-time">${item.time}</td>
-                            <td>
-                                <div class="class-subject">${item.subject}</div>
-                                ${item.faculty ? `<div class="class-details">${item.room} | ${item.faculty}</div>` : ''}
-                            </td>
-                            <td>${item.room}</td>
-                            <td>${item.faculty}</td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>`;
-    }
 
     // Sidebar navigation
     document.querySelectorAll('.menu-item').forEach(item => {

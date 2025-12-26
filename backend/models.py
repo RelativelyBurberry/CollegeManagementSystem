@@ -254,3 +254,20 @@ class FinalGrade(Base):
         UniqueConstraint("course_id", "student_id", name="uq_course_grade"),
     )
 
+
+# =====================================================
+# TIMETABLE
+# =====================================================
+
+class Timetable(Base):
+    __tablename__ = "timetable"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    course_id = Column(Integer, ForeignKey("courses.id"), nullable=False)
+    day_of_week = Column(String, nullable=False)
+    start_time = Column(String, nullable=False)
+    end_time = Column(String, nullable=False)
+    room = Column(String, nullable=True)
+
+    course = relationship("Course")

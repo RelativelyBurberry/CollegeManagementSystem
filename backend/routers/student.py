@@ -2,7 +2,16 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from database import get_db
-from models import Student, User, Course, Enrollment
+from models import (
+    Student,
+    User,
+    Course,
+    Enrollment,
+    Timetable,
+    Faculty,
+    FacultyCourse,
+)
+
 from auth import get_current_user, get_current_student
 from schemas import StudentDashboard
 
@@ -217,4 +226,50 @@ def get_final_grade(
         FinalGrade.student_id == student.id
     ).first()
 
+
+from models import Timetable
+from schemas import TimetableResponse
+
+@router.get("/my-timetable", response_model=list[TimetableResponse])
+def get_my_timetable(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_student)
+):
+    student = db.query(Student).filter(
+        Student.user_id == current_user.id
+    ).first()
+
+    if not student:
+        raise HTTPException(status_code=404, detail="Student not found")
+
+    rows = (
+        db.query(
+            Timetable.day_of_week,
+            Timetable.start_time,
+            Timetable.end_time,
+            Timetable.room,
+            Course.course_name.label("subject"),
+            Faculty.name.label("faculty")
+        )
+        .join(Course, Course.id == Timetable.course_id)
+        .join(Enrollment, Enrollment.course_id == Course.id)
+        .outerjoin(FacultyCourse, FacultyCourse.course_id == Course.id)
+        .outerjoin(Faculty, Faculty.id == FacultyCourse.faculty_id)
+        .filter(Enrollment.student_id == student.id)
+        .order_by(Timetable.day_of_week, Timetable.start_time)
+        .all()
+    )
+
+    # 🔑 KEY FIX: convert tuples → dicts
+    return [
+        {
+            "day_of_week": r.day_of_week,
+            "start_time": r.start_time,
+            "end_time": r.end_time,
+            "room": r.room,
+            "subject": r.subject,
+            "faculty": r.faculty
+        }
+        for r in rows
+    ]
 
