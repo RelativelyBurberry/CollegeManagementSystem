@@ -155,6 +155,12 @@ class AttendanceRecordCreate(BaseModel):
     student_id: int
     present: bool
 
+class AttendanceSummary(BaseModel):
+    subject: str
+    attended: int
+    total: int
+    percentage: int
+
 
 # =====================================================
 # ASSIGNMENT SCHEMAS

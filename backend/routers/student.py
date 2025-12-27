@@ -24,6 +24,7 @@ router = APIRouter(
 
 
 
+
 # =====================================================
 # GET ALL STUDENTS (ADMIN / FACULTY)
 # =====================================================
@@ -59,12 +60,13 @@ def get_my_profile(
     }
 
 
+from models import AttendanceRecord
+
 @router.get("/dashboard", response_model=StudentDashboard)
 def student_dashboard(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_student)
 ):
-    # get student profile
     student = db.query(Student).filter(
         Student.user_id == current_user.id
     ).first()
@@ -72,13 +74,30 @@ def student_dashboard(
     if not student:
         raise HTTPException(status_code=404, detail="Student not found")
 
-    # REAL course count from enrollments
     total_courses = db.query(Enrollment).filter(
         Enrollment.student_id == student.id
     ).count()
 
-    # TEMP until attendance / assignments tables exist
-    attendance_percentage = 0
+    total_attendance = (
+        db.query(AttendanceRecord)
+        .filter(AttendanceRecord.student_id == student.id)
+        .count()
+    )
+
+    present_attendance = (
+        db.query(AttendanceRecord)
+        .filter(
+            AttendanceRecord.student_id == student.id,
+            AttendanceRecord.present == True
+        )
+        .count()
+    )
+
+    attendance_percentage = (
+        round((present_attendance / total_attendance) * 100)
+        if total_attendance > 0 else 0
+    )
+
     pending_assignments = 0
     days_to_exam = 14
 
@@ -110,10 +129,11 @@ def get_my_courses(
 
 
 from models import AttendanceSession, AttendanceRecord
+from sqlalchemy import func, case
 
-@router.get("/attendance/{course_id}")
-def get_attendance_percentage(
-    course_id: int,
+
+@router.get("/attendance")
+def get_total_attendance_percentage(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_student)
 ):
@@ -123,19 +143,13 @@ def get_attendance_percentage(
 
     total = (
         db.query(AttendanceRecord)
-        .join(AttendanceSession)
-        .filter(
-            AttendanceSession.course_id == course_id,
-            AttendanceRecord.student_id == student.id
-        )
+        .filter(AttendanceRecord.student_id == student.id)
         .count()
     )
 
     present = (
         db.query(AttendanceRecord)
-        .join(AttendanceSession)
         .filter(
-            AttendanceSession.course_id == course_id,
             AttendanceRecord.student_id == student.id,
             AttendanceRecord.present == True
         )
@@ -145,7 +159,6 @@ def get_attendance_percentage(
     percentage = (present / total * 100) if total > 0 else 0
 
     return {
-        "course_id": course_id,
         "attendance_percentage": round(percentage, 2)
     }
 
@@ -269,6 +282,51 @@ def get_my_timetable(
             "room": r.room,
             "subject": r.subject,
             "faculty": r.faculty
+        }
+        for r in rows
+    ]
+
+
+from sqlalchemy import func, case
+from schemas import AttendanceSummary
+from models import AttendanceSession, AttendanceRecord
+
+@router.get("/my-attendance-summary", response_model=list[AttendanceSummary])
+def get_my_attendance_summary(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_student)
+):
+    student = db.query(Student).filter(
+        Student.user_id == current_user.id
+    ).first()
+
+    if not student:
+        raise HTTPException(status_code=404, detail="Student not found")
+
+    rows = (
+        db.query(
+            Course.course_name.label("subject"),
+            func.sum(
+                case(
+                    (AttendanceRecord.present == True, 1),
+                    else_=0
+                )
+            ).label("attended"),
+            func.count(AttendanceRecord.id).label("total")
+        )
+        .join(AttendanceSession, AttendanceSession.course_id == Course.id)
+        .join(AttendanceRecord, AttendanceRecord.session_id == AttendanceSession.id)
+        .filter(AttendanceRecord.student_id == student.id)
+        .group_by(Course.course_name)
+        .all()
+    )
+
+    return [
+        {
+            "subject": r.subject,
+            "attended": r.attended,
+            "total": r.total,
+            "percentage": round((r.attended / r.total) * 100) if r.total else 0
         }
         for r in rows
     ]

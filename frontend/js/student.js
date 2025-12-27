@@ -63,16 +63,6 @@ requireRole("student");
         });
     }
 
-    async function loadAttendance() {
-        const courseId = document.getElementById("courseSelect").value;
-
-        const data = await apiGet(
-            `http://127.0.0.1:8000/students/attendance/${courseId}`
-        );
-
-        document.getElementById("attendanceResult").innerText =
-            data.attendance_percentage + "%";
-    }
 
     async function loadFinalGrade() {
         const courseId = document.getElementById("courseSelect").value;
@@ -154,9 +144,61 @@ requireRole("student");
     }
 
 
-    
+    async function loadAttendance() {
+        try {
+            
+            const data = await apiGet("http://127.0.0.1:8000/students/attendance");
+            document.getElementById("attendancePercent").innerText =
+            data.attendance_percentage + "%";
+        } catch (err) {
+            console.error("Attendance failed:", err);
+        }
+    }
+
 
     
+    async function loadAttendanceTable() {
+    const tbody = document.querySelector(".attendance-table tbody");
+    if (!tbody) return;
+
+    try {
+        const data = await apiGet(
+            "http://127.0.0.1:8000/students/my-attendance-summary"
+        );
+
+        tbody.innerHTML = "";
+
+        if (!data.length) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="4">No attendance data available</td>
+                </tr>
+            `;
+            return;
+        }
+
+        data.forEach(row => {
+            let percentClass = "percent-high";
+            if (row.percentage <60) percentClass = "percent-low";
+            else if (row.percentage <=80) percentClass = "percent-medium";
+
+            tbody.innerHTML += `
+                <tr>
+                    <td>${row.subject}</td>
+                    <td>${row.attended}</td>
+                    <td>${row.total}</td>
+                    <td>
+                        <span class="attendance-percent ${percentClass}">
+                            ${row.percentage}%
+                        </span>
+                    </td>
+                </tr>
+            `;
+        });
+    } catch (err) {
+        console.error("Attendance table failed:", err);
+    }
+}
 
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -164,6 +206,7 @@ requireRole("student");
         loadStudentDashboard();
         loadStudentCourses();
         loadTimetable();
+        loadAttendanceTable();
         const courseSelect = document.getElementById("courseSelect");
 
             if (courseSelect) {

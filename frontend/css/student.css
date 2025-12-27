@@ -395,22 +395,27 @@
         }
         
         .attendance-percent {
-            display: inline-block;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 500;
-        }
-        
-        .percent-high {
-            background: rgba(76, 201, 240, 0.2);
-            color: var(--success);
-        }
-        
-        .percent-medium {
-            background: rgba(247, 37, 133, 0.2);
-            color: var(--warning);
-        }
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.percent-high {
+    background-color: #d9f3ff;   /* blue */
+    color: #0077b6;
+}
+
+.percent-medium {
+    background-color: #ffe6c9;   /* yellow */
+    color: #b45309;
+}
+
+.percent-low {
+    background-color: #ffd6e0;   /* 🔴 red */
+    color: #c1121f;
+}
+
         
         /* Results Section */
         .results-table {
