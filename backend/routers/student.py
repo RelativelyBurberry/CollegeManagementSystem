@@ -398,3 +398,38 @@ def get_my_results(
         }
         for r in rows
     ]
+
+from schemas import StudentSettingsUpdate
+from passlib.context import CryptContext
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+@router.get("/settings")
+def get_student_settings(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_student)
+):
+    return {
+        "username": current_user.email.split("@")[0],
+        "email": current_user.email
+    }
+
+
+@router.put("/settings")
+def update_student_settings(
+    data: StudentSettingsUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_student)
+):
+    if data.email:
+        current_user.email = data.email
+
+    if data.new_password:
+        current_user.hashed_password = pwd_context.hash(data.new_password)
+
+    db.commit()
+    db.refresh(current_user)
+
+    return {"message": "Settings updated successfully"}
+
+

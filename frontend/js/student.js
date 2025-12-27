@@ -264,6 +264,64 @@ async function loadResults() {
 }
 
 
+async function loadSettings() {
+    try {
+        const data = await apiGet("http://127.0.0.1:8000/students/settings");
+
+        document.getElementById("username").value = data.username;
+        document.getElementById("email").value = data.email;
+
+        // theme (frontend only)
+        const savedTheme = localStorage.getItem("theme") || "light";
+        document.getElementById("theme").value = savedTheme;
+
+    } catch (err) {
+        console.error("Failed to load settings:", err);
+    }
+}
+
+
+document.querySelector(".settings-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const confirm = document.getElementById("confirm-password").value;
+    const theme = document.getElementById("theme").value;
+
+    if (password && password !== confirm) {
+        alert("❌ Passwords do not match");
+        return;
+    }
+
+    const payload = {
+        email: email || null,
+        new_password: password || null
+    };
+
+    try {
+        await fetch("http://127.0.0.1:8000/students/settings", {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${localStorage.getItem("token")}`
+            },
+            body: JSON.stringify(payload)
+        });
+
+        localStorage.setItem("theme", theme);
+        alert("✅ Settings updated successfully");
+
+        document.getElementById("password").value = "";
+        document.getElementById("confirm-password").value = "";
+
+    } catch (err) {
+        console.error("Settings update failed:", err);
+        alert("❌ Failed to update settings");
+    }
+});
+
+
 
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -273,6 +331,7 @@ async function loadResults() {
         loadTimetable();
         loadAttendanceTable();
         loadResults();
+        loadSettings();
         const courseSelect = document.getElementById("courseSelect");
 
             if (courseSelect) {

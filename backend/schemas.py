@@ -230,4 +230,14 @@ class TimetableResponse(BaseModel):
         "from_attributes": True
     }
 
+#====================================================
+# STUDENT SETTINGS SCHEMAS
+# =====================================================
 
+from pydantic import BaseModel, EmailStr
+from typing import Optional
+
+
+class StudentSettingsUpdate(BaseModel):
+    email: Optional[EmailStr] = None
+    new_password: Optional[str] = None
