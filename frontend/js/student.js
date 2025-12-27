@@ -179,8 +179,8 @@ requireRole("student");
 
         data.forEach(row => {
             let percentClass = "percent-high";
-            if (row.percentage <60) percentClass = "percent-low";
-            else if (row.percentage <=80) percentClass = "percent-medium";
+            if (row.percentage <=  60) percentClass = "percent-low";
+            else if (row.percentage < 85) percentClass = "percent-medium";
 
             tbody.innerHTML += `
                 <tr>
@@ -200,6 +200,71 @@ requireRole("student");
     }
 }
 
+async function loadResults() {
+    const tbody = document.querySelector(".results-table tbody");
+    if (!tbody) return;
+
+    try {
+        const data = await apiGet("http://127.0.0.1:8000/students/my-results");
+
+        tbody.innerHTML = "";
+
+        if (!data.length) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="5">No results available</td>
+                </tr>
+            `;
+            return;
+        }
+
+        function gradeClass(grade) {
+            switch (grade) {
+                case "S": return "grade-s";
+                case "A+": return "grade-a-plus";
+                case "A": return "grade-a";
+                case "B+": return "grade-b-plus";
+                case "B": return "grade-b";
+                case "C": return "grade-c";
+                case "D": return "grade-d";
+                case "E": return "grade-e";
+                case "F": return "grade-f";
+                default: return "grade-c";
+            }
+        }
+
+        data.forEach(row => {
+            const grade = row.grade ?? "-";
+
+            tbody.innerHTML += `
+                <tr>
+                    <td>${row.subject}</td>
+                    <td>${row.internal}</td>
+                    <td>${row.external}</td>
+                    <td>${row.total}</td>
+                    <td>
+                        ${
+                            grade !== "-"
+                                ? `<span class="grade ${gradeClass(grade)}">${grade}</span>`
+                                : "-"
+                        }
+                    </td>
+                </tr>
+            `;
+        });
+
+    } catch (err) {
+        console.error("Results load failed:", err);
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="5">Failed to load results</td>
+            </tr>
+        `;
+    }
+}
+
+
+
 
     document.addEventListener("DOMContentLoaded", () => {
         loadStudentProfile();
@@ -207,6 +272,7 @@ requireRole("student");
         loadStudentCourses();
         loadTimetable();
         loadAttendanceTable();
+        loadResults();
         const courseSelect = document.getElementById("courseSelect");
 
             if (courseSelect) {

@@ -450,28 +450,56 @@
         }
         
         .grade {
-            display: inline-block;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            color: white;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        font-weight: 700;
+        font-size: 14px;
+        color: white;
         }
-        
+
+        /* 🔵 Top grades */
+        .grade-s {
+        background: linear-gradient(135deg, #6a11cb, #2575fc); /* S */
+        }
+
+        .grade-a-plus {
+        background: #4dd0e1; /* A+ */
+        }
+
         .grade-a {
-            background: #4cc9f0;
+        background: #42a5f5; /* A */
         }
-        
+
+        /* 🟢 Mid grades */
+        .grade-b-plus {
+        background: #5c6bc0; /* B+ */
+        }
+
         .grade-b {
-            background: #4895ef;
+        background: #7986cb; /* B */
         }
-        
+
         .grade-c {
-            background: #4361ee;
+        background: #ffb74d; /* C */
         }
+
+        /* 🔴 Low / Fail grades */
+        .grade-d {
+        background: #ff7043; /* D */
+        }
+
+        .grade-e {
+        background: #ef5350; /* E */
+        }
+
+        .grade-f {
+        background: #d32f2f; /* F (FAIL) */
+        }
+
         
         /* Settings Section */
         .settings-form {

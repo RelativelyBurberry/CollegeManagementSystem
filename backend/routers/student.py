@@ -331,3 +331,70 @@ def get_my_attendance_summary(
         for r in rows
     ]
 
+
+
+from sqlalchemy import func, case
+from models import (
+    Student,
+    User,
+    Course,
+    Enrollment,
+    Timetable,
+    Faculty,
+    FacultyCourse,
+    Exam,
+    ExamMark,
+    FinalGrade,
+)
+
+@router.get("/my-results")
+def get_my_results(
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_student)
+):
+    student = db.query(Student).filter(
+        Student.user_id == current_user.id
+    ).first()
+
+    if not student:
+        raise HTTPException(status_code=404, detail="Student not found")
+
+    rows = (
+        db.query(
+            Course.course_name.label("subject"),
+            func.sum(
+                case(
+                    (Exam.name == "Internal", ExamMark.marks_obtained),
+                    else_=0
+                )
+            ).label("internal"),
+            func.sum(
+                case(
+                    (Exam.name == "External", ExamMark.marks_obtained),
+                    else_=0
+                )
+            ).label("external"),
+            FinalGrade.grade.label("grade")
+        )
+        .join(Exam, Exam.course_id == Course.id)
+        .join(ExamMark, ExamMark.exam_id == Exam.id)
+        .outerjoin(
+            FinalGrade,
+            (FinalGrade.course_id == Course.id) &
+            (FinalGrade.student_id == student.id)
+        )
+        .filter(ExamMark.student_id == student.id)
+        .group_by(Course.course_name, FinalGrade.grade)
+        .all()
+    )
+
+    return [
+        {
+            "subject": r.subject,
+            "internal": r.internal or 0,
+            "external": r.external or 0,
+            "total": (r.internal or 0) + (r.external or 0),
+            "grade": r.grade
+        }
+        for r in rows
+    ]
