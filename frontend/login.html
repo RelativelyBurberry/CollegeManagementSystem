@@ -110,7 +110,7 @@
         <div class="left-container">
             <div id="loginForm">
                 <h2>Login</h2>
-                <form id = "login-form">
+                <form id = "login-form" onsubmit="return validateLogin(event)">
                 
                     <label id="login-label" for="login-username">Username:</label>
                     <input type="text" id="login-username" name="username" required>
@@ -203,51 +203,51 @@
 
 
    
-    const loginForm = document.getElementById("login-form");
+    async function validateLogin(event) {
+        event.preventDefault();
 
-loginForm.addEventListener("submit", async (e) => {
-    e.preventDefault(); // ✅ stops URL params + reload
+        const email = document.getElementById("login-username").value;
+        const password = document.getElementById("login-password").value;
 
-    const email = document.getElementById("login-username").value;
-    const password = document.getElementById("login-password").value;
+        if (!email || !password) {
+            alert("Please enter email and password");
+            return;
+        }
 
-    if (!email || !password) {
-        alert("Please enter email and password");
-        return;
+        // OAuth2 requires form-encoded data
+        const formData = new URLSearchParams();
+        formData.append("username", email);   // username = email
+        formData.append("password", password);
+
+        const response = await fetch(`${BASE}/auth/login`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: formData.toString()
+        });
+
+        const data = await response.json();
+        console.log("LOGIN RESPONSE:", data);
+
+        if (!response.ok) {
+            alert(data.detail || "Login failed");
+            return;
+        }
+
+        // Save auth
+        localStorage.setItem("token", data.access_token);
+        localStorage.setItem("role", data.role);
+
+        // Redirect
+        if (data.role === "student") {
+            window.location.href = "student_dashboard.html";
+        } else if (data.role === "faculty") {
+            window.location.href = "faculty_dashboard.html";
+        } else {
+            window.location.href = "admin_dashboard.html";
+        }
     }
-
-    const formData = new URLSearchParams();
-    formData.append("username", email);   // OAuth expects username
-    formData.append("password", password);
-
-    const response = await fetch(`${BASE}/auth/login`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-        },
-        body: formData.toString()
-    });
-
-    const data = await response.json();
-    console.log("LOGIN RESPONSE:", data);
-
-    if (!response.ok) {
-        alert(data.detail || "Login failed");
-        return;
-    }
-
-    localStorage.setItem("token", data.access_token);
-    localStorage.setItem("role", data.role);
-
-    if (data.role === "student") {
-        window.location.href = "student_dashboard.html";
-    } else if (data.role === "faculty") {
-        window.location.href = "faculty_dashboard.html";
-    } else {
-        window.location.href = "admin_dashboard.html";
-    }
-});
-
 
 </script>
 
