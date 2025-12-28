@@ -203,7 +203,7 @@
 
 
    
-    async function validateLogin(event) {
+   window.validateLogin = async function (event) {
     event.preventDefault(); // 🚨 THIS STOPS PAGE RELOAD
 
     const email = document.getElementById("login-username").value;
