@@ -110,7 +110,7 @@
         <div class="left-container">
             <div id="loginForm">
                 <h2>Login</h2>
-                <form id = "login-form" onsubmit="return validateLogin(event)">
+                <form id = "login-form" onsubmit="validateLogin(event)">
                 
                     <label id="login-label" for="login-username">Username:</label>
                     <input type="text" id="login-username" name="username" required>
@@ -204,21 +204,21 @@
 
    
     async function validateLogin(event) {
-        event.preventDefault();
+    event.preventDefault(); // 🚨 THIS STOPS PAGE RELOAD
 
-        const email = document.getElementById("login-username").value;
-        const password = document.getElementById("login-password").value;
+    const email = document.getElementById("login-username").value;
+    const password = document.getElementById("login-password").value;
 
-        if (!email || !password) {
-            alert("Please enter email and password");
-            return;
-        }
+    if (!email || !password) {
+        alert("Please enter email and password");
+        return;
+    }
 
-        // OAuth2 requires form-encoded data
-        const formData = new URLSearchParams();
-        formData.append("username", email);   // username = email
-        formData.append("password", password);
+    const formData = new URLSearchParams();
+    formData.append("username", email);
+    formData.append("password", password);
 
+    try {
         const response = await fetch(`${BASE}/auth/login`, {
             method: "POST",
             headers: {
@@ -235,11 +235,11 @@
             return;
         }
 
-        // Save auth
+        // ✅ SAVE AUTH
         localStorage.setItem("token", data.access_token);
         localStorage.setItem("role", data.role);
 
-        // Redirect
+        // ✅ REDIRECT
         if (data.role === "student") {
             window.location.href = "student_dashboard.html";
         } else if (data.role === "faculty") {
@@ -247,7 +247,12 @@
         } else {
             window.location.href = "admin_dashboard.html";
         }
+
+    } catch (err) {
+        console.error(err);
+        alert("Server error");
     }
+}
 
 </script>
 
