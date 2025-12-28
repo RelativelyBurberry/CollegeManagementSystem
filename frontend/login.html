@@ -111,13 +111,6 @@
             <div id="loginForm">
                 <h2>Login</h2>
                 <form onsubmit="return validateLogin()">
-                    <label for="login-role">Select Role:</label>
-                    <select id="login-role" name="role" required onchange="updateLoginLabel()">
-                        <option value="">-- Select Role --</option>
-                        <option value="admin">Admin</option>
-                        <option value="student">Student</option>
-                        <option value="faculty">Faculty</option>
-                    </select>
                 
                     <label id="login-label" for="login-username">Username:</label>
                     <input type="text" id="login-username" name="username" required>
@@ -165,9 +158,6 @@
             signupForm.classList.toggle("hidden");
         }
 
-        function updateLoginLabel() {
-            document.getElementById("login-label").textContent = "Email:";
-        }
 
         function updateSignupLabel() {
             document.getElementById("signup-label").textContent = "Email:";
@@ -260,7 +250,5 @@
 </script>
 
 
-
-    </script>
 </body>
 </html>
