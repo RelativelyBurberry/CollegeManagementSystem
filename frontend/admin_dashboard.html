@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Admin Dashboard</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>Admin Panel</h2>
+    <ul>
+        <li class="menu active" data-section="students">Students</li>
+        <li class="menu" data-section="faculty">Faculty</li>
+        <li class="menu" data-section="departments">Departments</li>
+        <li class="menu" data-section="courses">Courses</li>
+        <li onclick="logout()">Logout</li>
+    </ul>
+</div>
+
+
+<section id="students" class="section active"></section>
+<section id="faculty" class="section"></section>
+<section id="departments" class="section"></section>
+<section id="courses" class="section"></section>
+
+
+
+<div class="main">
+    <h1>Student Management</h1>
+
+    <div class="card">
+  <h3>Add Student</h3>
+  <input id="name" placeholder="Name">
+  <input id="reg_no" placeholder="Registration Number">
+  <input id="email" placeholder="Email">
+    <select id="department_id" class="input-select">
+    <option value="">Select Department</option>
+    </select>
+
+  <button id="submitBtn" onclick="submitStudent()">Create</button>
+</div>
+
+
+    <div class="card">
+        <h3>All Students</h3>
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Reg No</th>
+                <th>Email</th>
+                <th>Department</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody id="studentsTable"></tbody>
+        </table>
+    </div>
+</div>
+
+<script type="module" src="js/admin.js"></script>
+</body>
+</html>

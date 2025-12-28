@@ -28,6 +28,21 @@ class UserResponse(UserBase):
 
 
 
+#====================================================
+# ADMIN SCHEMAS
+# =====================================================
+class AdminStudentCreate(BaseModel):
+    name: str
+    reg_no: str
+    department_id: int
+    email: EmailStr
+
+class AdminFacultyCreate(BaseModel):
+    name: str
+    employee_id: str
+    department_id: int
+    email: EmailStr
+
 
 # =====================================================
 # STUDENT SCHEMAS

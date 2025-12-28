@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 
 from database import get_db
 from models import (
+    Department,
     Student,
     User,
     Course,
@@ -36,7 +37,25 @@ def get_all_students(
     if current_user.role not in ["admin", "faculty"]:
         raise HTTPException(status_code=403, detail="Not authorized")
 
-    return db.query(Student).all()
+    students = (
+        db.query(Student)
+        .join(User, User.id == Student.user_id)
+        .join(Department, Department.id == Student.department_id)
+        .all()
+    )
+
+    return [
+        {
+            "id": s.id,
+            "name": s.name,
+            "reg_no": s.reg_no,
+            "email": s.user.email,
+            "department_id": s.department_id,
+            "department_name": s.department.name
+        }
+        for s in students
+    ]
+
 
 
 # =====================================================

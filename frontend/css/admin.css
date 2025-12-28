@@ -1,0 +1,128 @@
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: #f5f7fb;
+    display: flex;
+}
+
+.sidebar {
+    width: 220px;
+    background: #1e293b;
+    color: white;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.sidebar h2 {
+    margin-bottom: 30px;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar li {
+    padding: 12px;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+.sidebar li:hover,
+.sidebar li.active {
+    background: #334155;
+}
+
+.main {
+    flex: 1;
+    padding: 30px;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    margin-bottom: 25px;
+    border-radius: 10px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+}
+
+input {
+    padding: 10px;
+    margin: 8px 5px;
+    width: 220px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-family: 'Poppins', sans-serif;
+    background-color: white;
+    cursor: pointer;
+}
+
+button {
+    padding: 10px 15px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+button:hover {
+    background: #1d4ed8;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+  padding: 14px 16px;
+  vertical-align: middle;
+}
+
+td.action-cell {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.action-btn {
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.action-btn.delete {
+  background: #2563eb;
+  color: white;
+}
+
+.action-btn.edit {
+  background: #334155;
+  color: white;
+}
+
+
+.input-select {
+    padding: 10px;
+    margin: 8px 5px;
+    width: 220px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-family: 'Poppins', sans-serif;
+    background-color: white;
+    cursor: pointer;
+}
+
+td.action-cell {
+    text-align: center;
+}
+
+button.delete-btn {
+    background: #2563eb;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 14px;
+}

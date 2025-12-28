@@ -5,7 +5,7 @@ from database import get_db
 from models import User, Student, Faculty
 from schemas import (
     StudentCreate,
-   
+    AdminStudentCreate,
     FacultyCreate
 )
 from auth import get_current_user, hash_password
@@ -40,76 +40,42 @@ def get_current_admin(
 # CREATE STUDENT (ADMIN ONLY)
 @router.post("/students", status_code=201)
 def create_student(
-    student: StudentCreate,
-    user_id: int,
+    data: AdminStudentCreate,
     db: Session = Depends(get_db),
     _: User = Depends(get_current_admin)
 ):
-    user = db.query(User).filter(User.id == user_id).first()
-    if not user or user.role != "student":
-        raise HTTPException(status_code=400, detail="Invalid student user")
+    # 1. Prevent duplicate user
+    if db.query(User).filter(User.email == data.email).first():
+        raise HTTPException(400, "User already exists")
 
-    existing = db.query(Student).filter(Student.user_id == user_id).first()
-    if existing:
-        raise HTTPException(status_code=400, detail="Student profile already exists")
-
-    student_profile = Student(
-        name=student.name,
-        reg_no=student.reg_no,
-        department=student.department,
-        user_id=user_id
+    # 2. Create auth user
+    user = User(
+        email=data.email,
+        hashed_password=hash_password("Temp@123"),
+        role="student"
     )
 
-    db.add(student_profile)
-    db.commit()
-    db.refresh(student_profile)
-
-    return student_profile
-
-@router.post("/faculty", status_code=201)
-def create_faculty(
-    faculty: FacultyCreate,
-    user_id: int,
-    db: Session = Depends(get_db),
-    _: User = Depends(get_current_admin)
-):
-    # 1. Validate user
-    user = db.query(User).filter(User.id == user_id).first()
-    if not user or user.role != "faculty":
-        raise HTTPException(
-            status_code=400,
-            detail="Invalid faculty user"
-        )
-
-    # 2. Prevent duplicate faculty profile
-    existing = db.query(Faculty).filter(Faculty.user_id == user_id).first()
-    if existing:
-        raise HTTPException(
-            status_code=400,
-            detail="Faculty profile already exists"
-        )
-
-    # 3. Create faculty profile
-    faculty_profile = Faculty(
-        name=faculty.name,
-        employee_id=faculty.employee_id,
-        department=faculty.department,
-        user_id=user_id
+    # 3. Create student profile
+    student = Student(
+        name=data.name,
+        reg_no=data.reg_no,
+        department_id=data.department_id,
+        user=user
     )
 
-    db.add(faculty_profile)
+    db.add_all([user, student])
     db.commit()
-    db.refresh(faculty_profile)
+    db.refresh(student)
 
-    return faculty_profile
+    return student
 
 
 @router.put("/students/{student_id}")
 def update_student(
     student_id: int,
     name: str | None = None,
-    department: str | None = None,
     reg_no: str | None = None,
+    department_id: int | None = None,
     db: Session = Depends(get_db),
     _: User = Depends(get_current_admin)
 ):
@@ -119,14 +85,15 @@ def update_student(
 
     if name is not None:
         student.name = name
-    if department is not None:
-        student.department = department
     if reg_no is not None:
         student.reg_no = reg_no
+    if department_id is not None:
+        student.department_id = department_id
 
     db.commit()
     db.refresh(student)
     return student
+
 
 @router.delete("/students/{student_id}", status_code=204)
 def delete_student(
@@ -138,8 +105,51 @@ def delete_student(
     if not student:
         raise HTTPException(status_code=404, detail="Student not found")
 
+    # 👇 KEY FIX
+    user = db.query(User).filter(User.id == student.user_id).first()
+
     db.delete(student)
+
+    if user:
+        db.delete(user)
+
     db.commit()
+
+
+
+from schemas import AdminFacultyCreate
+
+@router.post("/faculty", status_code=201)
+def create_faculty(
+    data: AdminFacultyCreate,
+    db: Session = Depends(get_db),
+    _: User = Depends(get_current_admin)
+):
+    # check email uniqueness
+    if db.query(User).filter(User.email == data.email).first():
+        raise HTTPException(status_code=400, detail="User already exists")
+
+    # create auth user
+    user = User(
+        email=data.email,
+        hashed_password=hash_password("Temp@123"),
+        role="faculty"
+    )
+
+    # create faculty profile
+    faculty = Faculty(
+        name=data.name,
+        employee_id=data.employee_id,
+        department_id=data.department_id,
+        user=user
+    )
+
+    db.add_all([user, faculty])
+    db.commit()
+    db.refresh(faculty)
+
+    return faculty
+
 
 @router.put("/faculty/{faculty_id}")
 def update_faculty(
@@ -179,6 +189,14 @@ def delete_faculty(
     db.commit()
 
 
+@router.get("/departments")
+def get_departments(
+    db: Session = Depends(get_db),
+    _: User = Depends(get_current_admin)
+):
+    return db.query(Department).all()
+
+
 @router.post("/departments", status_code=201)
 def create_department(
     dept: DepartmentCreate,
@@ -204,18 +222,6 @@ def create_course(
     db.refresh(course_obj)
     return course_obj
 
-
-@router.post("/assign-faculty", status_code=201)
-def assign_faculty_to_course(
-    data: FacultyCourseCreate,
-    db: Session = Depends(get_db),
-    _: User = Depends(get_current_admin)
-):
-    assignment = FacultyCourse(**data.dict())
-    db.add(assignment)
-    db.commit()
-    db.refresh(assignment)
-    return assignment
 
 
 @router.post("/enroll-student", status_code=201)
