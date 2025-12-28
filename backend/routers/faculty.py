@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from database import get_db
-from models import AssignmentSubmission, Faculty, User, Course, FacultyCourse,Assignment, Enrollment,Timetable
+from models import AssignmentSubmission, Faculty, User, Course, FacultyCourse,Assignment, Enrollment,Timetable,Department
 from auth import get_current_user,  get_current_faculty
 
 from schemas import FacultyDashboard,FacultyResponse
@@ -22,15 +22,38 @@ router = APIRouter(
 # =====================================================
 # GET ALL FACULTY (ADMIN ONLY)
 # =====================================================
+from sqlalchemy.orm import joinedload
+
 @router.get("/")
 def get_all_faculty(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    if current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Not authorized")
+    if not current_user.role or current_user.role.lower() != "admin":
+        raise HTTPException(status_code=403, detail="Admin only")
 
-    return db.query(Faculty).all()
+    faculty = (
+        db.query(Faculty)
+        .options(
+            joinedload(Faculty.user),
+            joinedload(Faculty.department)
+        )
+        .all()
+    )
+
+    return [
+        {
+            "id": f.id,
+            "name": f.name,
+            "employee_id": f.employee_id,
+            "email": f.user.email if f.user else None,
+            "department_id": f.department_id,
+            "department_name": f.department.name if f.department else None
+        }
+        for f in faculty
+    ]
+
+
 
 
 # =====================================================

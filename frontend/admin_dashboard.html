@@ -21,14 +21,8 @@
 </div>
 
 
-<section id="students" class="section active"></section>
-<section id="faculty" class="section"></section>
-<section id="departments" class="section"></section>
-<section id="courses" class="section"></section>
-
-
-
-<div class="main">
+<section id="students" class="section active">
+    <div class="main">
     <h1>Student Management</h1>
 
     <div class="card">
@@ -45,23 +39,228 @@
 
 
     <div class="card">
-        <h3>All Students</h3>
-        <table>
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Reg No</th>
-                <th>Email</th>
-                <th>Department</th>
-                <th>Action</th>
-            </tr>
-            </thead>
-            <tbody id="studentsTable"></tbody>
-        </table>
-    </div>
+  <div class="search-bar">
+    <input
+      id="studentSearchInput"
+      placeholder="Search by name, reg no, email, department"
+    />
+  </div>
+
+  <h3>All Students</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Reg No</th>
+        <th>Email</th>
+        <th>Department</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="studentsTable"></tbody>
+  </table>
+
+  <div class="pagination">
+    <button onclick="prevStudentPage()">Prev</button>
+    <span id="studentPageInfo"></span>
+    <button onclick="nextStudentPage()">Next</button>
+  </div>
 </div>
 
-<script type="module" src="js/admin.js"></script>
+<div class="card">
+  <h3>Search Student</h3>
+
+  <input
+    id="studentSearchAssignInput"
+    placeholder="Search student by name or reg no"
+  />
+
+  <div id="studentAssignResults" class="search-results"></div>
+
+  <div id="selectedStudentBox" style="display:none;">
+    <strong>Selected Student:</strong>
+    <span id="selectedStudentText"></span>
+  </div>
+
+  <button id="changeStudentBtn"
+          style="display:none;"
+          onclick="resetStudentAssign()">
+    Change Student
+  </button>
+</div>
+
+<div class="card" id="assignStudentCourseCard" style="display:none;">
+  <h3>Assign Course</h3>
+
+  <input
+    id="studentCourseSearchInput"
+    placeholder="Search course by code or name"
+  />
+
+  <div id="studentCourseResults" class="search-results"></div>
+
+  <div class="pagination">
+    <button onclick="prevStudentCoursePage()">Prev</button>
+    <span id="studentCoursePageInfo"></span>
+    <button onclick="nextStudentCoursePage()">Next</button>
+  </div>
+
+  <button onclick="assignCourseToStudent()">Assign</button>
+</div>
+
+<div class="card">
+  <h3>Student Course Mapping</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Course</th>
+        <th>Course ID</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="studentCourseTable"></tbody>
+  </table>
+</div>
+
+
+</section>
+<section id="faculty" class="section">
+    <h1>Faculty Management</h1>
+
+    <div class="card">
+      <h3>Add Faculty</h3>
+      <input id="f_name" placeholder="Name">
+      <input id="f_emp" placeholder="Employee ID">
+      <input id="f_email" placeholder="Email">
+      <select id="f_department" class="input-select"></select>
+      <button id="f_submitBtn" onclick="submitFaculty()">Create</button>
+    </div>
+
+    <div class="card">
+  <div class="search-bar">
+    <input
+      id="facultyTableSearch"
+      placeholder="Search by name, employee ID, email, department"
+    />
+  </div>
+
+  <h3>All Faculty</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Employee ID</th>
+        <th>Email</th>
+        <th>Department</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="facultyTable"></tbody>
+  </table>
+
+  <div class="pagination">
+    <button onclick="prevFacultyPage()">Prev</button>
+    <span id="facultyPageInfo"></span>
+    <button onclick="nextFacultyPage()">Next</button>
+  </div>
+</div>
+
+
+    
+  <div class="card">
+  <h3>Search Faculty</h3>
+
+  <div class="search-row">
+    <input id="facultySearchInput" placeholder="Search by name or employee ID">
+  </div>
+
+  <div id="facultySearchResults" class="search-results"></div>
+
+  <div id="selectedFacultyBox" class="selected-faculty" style="display:none;">
+    <strong>Selected Faculty:</strong>
+    <span id="selectedFacultyText"></span>
+  </div>
+
+  <button id="changeFacultyBtn" onclick="resetFaculty()" style="display:none;">
+    Change Faculty
+  </button>
+</div>
+
+
+
+<div class="card" style="display:none;" id="assignCourseCard">
+  <h3>Assign Course</h3>
+
+  <input
+    id="courseSearchInput"
+    placeholder="Search course by code or name"
+  />
+
+  <div id="courseSearchResults" class="search-results"></div>
+
+  <div class="pagination">
+    <button onclick="prevCoursePage()">Prev</button>
+    <span id="coursePageInfo"></span>
+    <button onclick="nextCoursePage()">Next</button>
+  </div>
+
+  <button onclick="assignCourse()">Assign</button>
+</div>
+
+
+<div class="card">
+  <h3>Faculty Course Mapping</h3>
+  <table>
+    <thead>
+  <tr>
+    <th>Course</th>
+    <th>Course ID</th>
+    <th>Students</th>
+    <th>Action</th>
+  </tr>
+</thead>
+
+    <tbody id="facultyCourseTable"></tbody>
+  </table>
+</div>
+
+
+  </section>
+
+  <!-- ================= PLACEHOLDERS ================= -->
+  <section id="departments" class="section">
+    <h1>Departments</h1>
+    <p>Coming soon</p>
+  </section>
+
+  <section id="courses" class="section">
+    <h1>Courses</h1>
+    <p>Coming soon</p>
+  </section>
+
+  
+
+</div>
+
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script type="module" src="js/admin.js" defer></script>
 </body>
 </html>

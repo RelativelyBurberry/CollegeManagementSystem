@@ -119,6 +119,31 @@ def delete_student(
 
 from schemas import AdminFacultyCreate
 
+@router.get("/faculty")
+def get_all_faculty(
+    db: Session = Depends(get_db),
+    _: User = Depends(get_current_admin)
+):
+    faculty = (
+        db.query(Faculty)
+        .join(User, User.id == Faculty.user_id)
+        .join(Department, Department.id == Faculty.department_id)
+        .all()
+    )
+
+    return [
+        {
+            "id": f.id,
+            "name": f.name,
+            "employee_id": f.employee_id,
+            "email": f.user.email,
+            "department_id": f.department_id,
+            "department_name": f.department.name
+        }
+        for f in faculty
+    ]
+
+
 @router.post("/faculty", status_code=201)
 def create_faculty(
     data: AdminFacultyCreate,
@@ -155,8 +180,8 @@ def create_faculty(
 def update_faculty(
     faculty_id: int,
     name: str | None = None,
-    department: str | None = None,
     employee_id: str | None = None,
+    department_id: int | None = None,
     db: Session = Depends(get_db),
     _: User = Depends(get_current_admin)
 ):
@@ -166,14 +191,15 @@ def update_faculty(
 
     if name is not None:
         faculty.name = name
-    if department is not None:
-        faculty.department = department
     if employee_id is not None:
         faculty.employee_id = employee_id
+    if department_id is not None:
+        faculty.department_id = department_id
 
     db.commit()
     db.refresh(faculty)
     return faculty
+
 
 @router.delete("/faculty/{faculty_id}", status_code=204)
 def delete_faculty(
@@ -183,10 +209,22 @@ def delete_faculty(
 ):
     faculty = db.query(Faculty).filter(Faculty.id == faculty_id).first()
     if not faculty:
-        raise HTTPException(status_code=404, detail="Faculty not found")
+        raise HTTPException(404, "Faculty not found")
+
+    # delete dependent rows first
+    db.query(FacultyCourse).filter(
+        FacultyCourse.faculty_id == faculty_id
+    ).delete()
+
+    user = db.query(User).filter(User.id == faculty.user_id).first()
 
     db.delete(faculty)
+    if user:
+        db.delete(user)
+
     db.commit()
+
+
 
 
 @router.get("/departments")
@@ -209,6 +247,13 @@ def create_department(
     db.refresh(department)
     return department
 
+@router.get("/courses")
+def get_all_courses(
+    db: Session = Depends(get_db),
+    _: User = Depends(get_current_admin)
+):
+    return db.query(Course).all()
+
 
 @router.post("/courses", status_code=201)
 def create_course(
@@ -221,6 +266,74 @@ def create_course(
     db.commit()
     db.refresh(course_obj)
     return course_obj
+
+from sqlalchemy import func
+
+
+@router.get("/faculty-courses")
+def get_faculty_course_mapping(
+    faculty_id: int | None = None,
+    db: Session = Depends(get_db),
+    _: User = Depends(get_current_admin)
+):
+    query = (
+        db.query(
+            Faculty.id.label("faculty_id"),
+            Faculty.name.label("faculty_name"),
+            Course.id.label("course_id"),
+            Course.course_code,
+            Course.course_name,
+            func.count(Enrollment.id).label("student_count")
+        )
+        .join(FacultyCourse, FacultyCourse.faculty_id == Faculty.id)
+        .join(Course, Course.id == FacultyCourse.course_id)
+        .outerjoin(
+            Enrollment,
+            Enrollment.course_id == Course.id
+        )
+        .group_by(
+            Faculty.id,
+            Course.id
+        )
+    )
+
+    if faculty_id:
+        query = query.filter(Faculty.id == faculty_id)
+
+    rows = query.all()
+
+    return [
+        {
+            "faculty_id": r.faculty_id,
+            "faculty_name": r.faculty_name,
+            "course_id": r.course_id,
+            "course_code": r.course_code,
+            "course_name": r.course_name,
+            "student_count": r.student_count
+        }
+        for r in rows
+    ]
+
+
+
+
+@router.delete("/faculty-courses", status_code=204)
+def unassign_faculty_course(
+    faculty_id: int,
+    course_id: int,
+    db: Session = Depends(get_db),
+    _: User = Depends(get_current_admin)
+):
+    mapping = db.query(FacultyCourse).filter(
+        FacultyCourse.faculty_id == faculty_id,
+        FacultyCourse.course_id == course_id
+    ).first()
+
+    if not mapping:
+        raise HTTPException(404, "Mapping not found")
+
+    db.delete(mapping)
+    db.commit()
 
 
 
@@ -280,3 +393,80 @@ def assign_faculty_to_course(
 
     return assignment
 
+
+from schemas import FacultyUserCreate
+
+@router.post("/faculty/{faculty_id}/create-user")
+def create_user_for_faculty(
+    faculty_id: int,
+    data: FacultyUserCreate,
+    db: Session = Depends(get_db),
+    _: User = Depends(get_current_admin)
+):
+    faculty = db.query(Faculty).filter(Faculty.id == faculty_id).first()
+    if not faculty:
+        raise HTTPException(404, "Faculty not found")
+
+    if faculty.user_id is not None:
+        raise HTTPException(400, "Faculty already has a user account")
+
+    # prevent duplicate emails
+    if db.query(User).filter(User.email == data.email).first():
+        raise HTTPException(400, "Email already exists")
+
+    user = User(
+        email=data.email,
+        hashed_password=hash_password("Temp@123"),
+        role="faculty"
+    )
+
+    faculty.user = user
+
+    db.add(user)
+    db.commit()
+    db.refresh(faculty)
+
+    return {
+        "faculty_id": faculty.id,
+        "email": user.email
+    }
+
+@router.get("/student-courses")
+def get_student_courses(
+    student_id: int,
+    db: Session = Depends(get_db),
+    _: User = Depends(get_current_admin)
+):
+    rows = (
+        db.query(Course.id, Course.course_code, Course.course_name)
+        .join(Enrollment, Enrollment.course_id == Course.id)
+        .filter(Enrollment.student_id == student_id)
+        .all()
+    )
+
+    return [
+        {
+            "course_id": r.id,
+            "course_code": r.course_code,
+            "course_name": r.course_name
+        }
+        for r in rows
+    ]
+
+@router.delete("/enroll-student", status_code=204)
+def unenroll_student(
+    student_id: int,
+    course_id: int,
+    db: Session = Depends(get_db),
+    _: User = Depends(get_current_admin)
+):
+    enrollment = db.query(Enrollment).filter(
+        Enrollment.student_id == student_id,
+        Enrollment.course_id == course_id
+    ).first()
+
+    if not enrollment:
+        raise HTTPException(404, "Enrollment not found")
+
+    db.delete(enrollment)
+    db.commit()

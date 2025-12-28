@@ -283,4 +283,7 @@ class StudentSettingsUpdate(BaseModel):
 
 
 
-    
+from pydantic import BaseModel, EmailStr
+
+class FacultyUserCreate(BaseModel):
+    email: EmailStr
