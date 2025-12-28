@@ -80,6 +80,8 @@ class Department(Base):
     faculty = relationship("Faculty", back_populates="department")
     courses = relationship("Course", back_populates="department")
 
+
+
 # =====================================================
 # COURSE MODEL
 # =====================================================
@@ -259,15 +261,18 @@ class FinalGrade(Base):
 # TIMETABLE
 # =====================================================
 
+from sqlalchemy import Time
+
 class Timetable(Base):
     __tablename__ = "timetable"
 
     id = Column(Integer, primary_key=True, index=True)
-
-    course_id = Column(Integer, ForeignKey("courses.id"), nullable=False)
+    course_id = Column(Integer, ForeignKey("courses.id"))
+    faculty_id = Column(Integer, ForeignKey("faculty.id"))
     day_of_week = Column(String, nullable=False)
-    start_time = Column(String, nullable=False)
-    end_time = Column(String, nullable=False)
-    room = Column(String, nullable=True)
 
-    course = relationship("Course")
+    start_time = Column(Time, nullable=False)
+    end_time = Column(Time, nullable=False)
+
+    room = Column(String, nullable=False)
+

@@ -61,6 +61,26 @@ class StudentDashboard(BaseModel):
 
 
 # =====================================================
+# DEPARTMENT SCHEMAS
+# =====================================================
+
+class DepartmentBase(BaseModel):
+    code: str
+    name: str
+
+class DepartmentCreate(DepartmentBase):
+    pass
+
+class DepartmentResponse(BaseModel):
+    id: int
+    name: str
+
+    model_config = {
+        "from_attributes": True
+    }
+
+
+# =====================================================
 # FACULTY SCHEMAS
 # =====================================================
 
@@ -74,36 +94,34 @@ class FacultyCreate(FacultyBase):
     pass
 
 
-class FacultyResponse(FacultyBase):
+class FacultyResponse(BaseModel):
     id: int
+    name: str
+    employee_id: str
     user_id: int
-
+    department: DepartmentResponse   
 
     model_config = {
-    "from_attributes": True
+        "from_attributes": True
     }
 
 
+from typing import Optional
+
+class NextClass(BaseModel):
+    course: str
+    time: str
+    room: str
+    
 class FacultyDashboard(BaseModel):
     courses: int
     students: int
     pending_papers: int
     meetings_today: int
+    classes_today: int
+    next_class: Optional[NextClass]
 
 
-# =====================================================
-# DEPARTMENT SCHEMAS
-# =====================================================
-
-class DepartmentBase(BaseModel):
-    code: str
-    name: str
-
-class DepartmentCreate(DepartmentBase):
-    pass
-
-class DepartmentResponse(DepartmentBase):
-    id: int
 
 
 # =====================================================
@@ -207,12 +225,16 @@ class GradeCreate(BaseModel):
 # TIMETABLE SCHEMAS
 # =====================================================
 
+from datetime import time
+
 class TimetableCreate(BaseModel):
     course_id: int
-    day_of_week: str      # Monday, Tuesday, etc
-    start_time: str       # HH:MM
-    end_time: str         # HH:MM
-    room: str | None = None
+    faculty_id: int
+    day_of_week: str
+    start_time: time
+    end_time: time
+    room: str
+
 
 
 # =====================================================
@@ -221,8 +243,8 @@ class TimetableCreate(BaseModel):
 
 class TimetableResponse(BaseModel):
     day_of_week: str
-    start_time: str
-    end_time: str
+    start_time: time
+    end_time: time
     room: str | None
     subject: str
     faculty: str | None
@@ -241,3 +263,9 @@ from typing import Optional
 class StudentSettingsUpdate(BaseModel):
     email: Optional[EmailStr] = None
     new_password: Optional[str] = None
+
+
+
+
+
+    

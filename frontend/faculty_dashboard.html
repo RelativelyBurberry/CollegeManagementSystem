@@ -60,8 +60,9 @@
         <!-- Home Section -->
         <div id="home" class="section active">
             <div class="welcome-card">
-                <h2 class="welcome-title">Welcome back, Dr. Rohan</h2>
-                <p class="welcome-text">You have 3 classes scheduled for today. Your next lecture is Data Structures at 10:00 AM in CS-101. Don't forget about the department meeting at 3:00 PM.</p>
+                <h2 class="welcome-title">Welcome back</h2>
+                <p class="welcome-text" id="welcome-text">
+                </p>
                 <div class="welcome-actions">
                     <button class="welcome-btn welcome-btn-primary" id="viewScheduleBtn">
                         <i class="fas fa-calendar-check"></i> View Schedule
@@ -74,44 +75,45 @@
             
             <div class="stats-container">
                 <div class="stat-card" id="coursesCard">
-                    <div class="stat-icon blue">
-                        <i class="fas fa-book-open"></i>
-                    </div>
-                    <div>
-                        <div class="stat-value">5</div>
-                        <div class="stat-label">Courses Teaching</div>
-                    </div>
-                </div>
-                
-                <div class="stat-card" id="studentsCard">
-                    <div class="stat-icon green">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <div>
-                        <div class="stat-value">142</div>
-                        <div class="stat-label">Students</div>
-                    </div>
-                </div>
-                
-                <div class="stat-card" id="papersCard">
-                    <div class="stat-icon orange">
-                        <i class="fas fa-tasks"></i>
-                    </div>
-                    <div>
-                        <div class="stat-value">8</div>
-                        <div class="stat-label">Papers to Grade</div>
-                    </div>
-                </div>
-                
-                <div class="stat-card" id="meetingsCard">
-                    <div class="stat-icon purple">
-                        <i class="fas fa-calendar-day"></i>
-                    </div>
-                    <div>
-                        <div class="stat-value">3</div>
-                        <div class="stat-label">Meetings Today</div>
-                    </div>
-                </div>
+    <div class="stat-icon blue">
+        <i class="fas fa-book-open"></i>
+    </div>
+    <div>
+        <div class="stat-value" id="coursesCount"></div>
+        <div class="stat-label">Courses Teaching</div>
+    </div>
+</div>
+
+<div class="stat-card" id="studentsCard">
+    <div class="stat-icon green">
+        <i class="fas fa-users"></i>
+    </div>
+    <div>
+        <div class="stat-value" id="studentsCount">12</div>
+        <div class="stat-label">Students</div>
+    </div>
+</div>
+
+<div class="stat-card" id="papersCard">
+    <div class="stat-icon orange">
+        <i class="fas fa-tasks"></i>
+    </div>
+    <div>
+        <div class="stat-value" id="pendingPapers"></div>
+        <div class="stat-label">Papers to Grade</div>
+    </div>
+</div>
+
+<div class="stat-card" id="meetingsCard">
+    <div class="stat-icon purple">
+        <i class="fas fa-calendar-day"></i>
+    </div>
+    <div>
+        <div class="stat-value" id="meetingsToday"></div>
+        <div class="stat-label">Meetings Today</div>
+    </div>
+</div>
+
             </div>
             
             <div class="section">
@@ -306,7 +308,7 @@
             </div>
             <div class="modal-body">
                 <p>Here are the courses you're currently teaching:</p>
-                <ul style="list-style-type: none; margin-top: 12px;">
+                <ul id="coursesModalList" style="list-style-type: none; margin-top: 12px;">
                     <li style="padding: 8px; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center;">
                         <i class="fas fa-book" style="margin-right: 8px; color: var(--primary);"></i>
                         <span>CS-201: Data Structures</span>
@@ -342,8 +344,8 @@
                 <h3 class="modal-title">Students Enrolled</h3>
                 <button class="close-modal">&times;</button>
             </div>
-            <div class="modal-body">
-                <p>Total students across all your courses: <strong>142</strong></p>
+            <div class="modal-body" id="studentsModalContent">
+                <p>Total students across all your courses: <strong id="studentsTotal"></strong></p>
                 <div style="margin-top: 15px;">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
                         <span>CS-201: Data Structures</span>
@@ -483,7 +485,7 @@
 
     
         
-    <script type="module" src="js/faculty.js"></script>
+    <script type="module" src="js/faculty.js" defer></script>
 
 </body>
 </html>

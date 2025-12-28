@@ -2,12 +2,16 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from database import get_db
-from models import Faculty, User, Course, FacultyCourse
+from models import AssignmentSubmission, Faculty, User, Course, FacultyCourse,Assignment, Enrollment,Timetable
 from auth import get_current_user,  get_current_faculty
 
-from schemas import FacultyDashboard
+from schemas import FacultyDashboard,FacultyResponse
+
+from datetime import datetime
+from sqlalchemy import and_
 
 
+from sqlalchemy import func
 router = APIRouter(
     prefix="/faculty",
     tags=["Faculty"]
@@ -32,8 +36,60 @@ def get_all_faculty(
 # =====================================================
 # GET OWN FACULTY PROFILE (FACULTY)
 # =====================================================
-@router.get("/me")
+@router.get("/me", response_model=FacultyResponse)
 def get_my_profile(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_faculty)
+):
+    faculty = (
+        db.query(Faculty)
+        .filter(Faculty.user_id == current_user.id)
+        .first()
+    )
+
+    if not faculty:
+        raise HTTPException(status_code=404, detail="Faculty profile not found")
+
+    return faculty
+
+
+@router.get("/papers-summary")
+def papers_summary(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_faculty)
+):
+    faculty = db.query(Faculty).filter(
+        Faculty.user_id == current_user.id
+    ).first()
+
+    rows = (
+        db.query(
+            Course.course_code,
+            Assignment.title,
+            func.count(AssignmentSubmission.id)
+        )
+        .join(Assignment, Assignment.course_id == Course.id)
+        .join(AssignmentSubmission, AssignmentSubmission.assignment_id == Assignment.id)
+        .join(FacultyCourse, FacultyCourse.course_id == Course.id)
+        .filter(
+            FacultyCourse.faculty_id == faculty.id,
+            AssignmentSubmission.marks == None
+        )
+        .group_by(Course.course_code, Assignment.title)
+        .all()
+    )
+
+    return [
+        {
+            "course": r[0],
+            "title": r[1],
+            "pending": r[2]
+        }
+        for r in rows
+    ]
+
+@router.get("/dashboard", response_model=FacultyDashboard)
+def faculty_dashboard(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_faculty)
     ):
@@ -41,24 +97,88 @@ def get_my_profile(
             Faculty.user_id == current_user.id
         ).first()
 
-        if not faculty:
-            raise HTTPException(status_code=404, detail="Faculty profile not found")
+        # courses count
+        courses_count = db.query(FacultyCourse).filter(
+            FacultyCourse.faculty_id == faculty.id
+        ).count()
 
-        return faculty
+        # students count (DISTINCT students across all courses)
+        students_count = (
+            db.query(func.count(func.distinct(Enrollment.student_id)))
+            .join(FacultyCourse, FacultyCourse.course_id == Enrollment.course_id)
+            .filter(FacultyCourse.faculty_id == faculty.id)
+            .scalar()
+        )
 
-@router.get("/dashboard", response_model=FacultyDashboard)
-def faculty_dashboard(
-        db: Session = Depends(get_db),
-        current_user: User = Depends(get_current_faculty)
-    ):
-    # TEMP stub data (same idea as student)
-    return {
-        "courses": 4,
-        "students": 120,
-        "pending_papers": 8,
-        "meetings_today": 2
-    }
-    model_config = {"from_attributes": True}
+        pending_papers = (
+            db.query(func.count(AssignmentSubmission.id))
+            .join(Assignment, Assignment.id == AssignmentSubmission.assignment_id)
+            .join(FacultyCourse, FacultyCourse.course_id == Assignment.course_id)
+            .filter(
+                FacultyCourse.faculty_id == faculty.id,
+                AssignmentSubmission.marks == None
+            )
+            .scalar()
+        )
+
+
+        # meetings today (stub for now)
+        meetings_today = 2
+
+        now = datetime.now()
+        today = now.strftime("%A")  # e.g. "Monday"
+        current_time = now.time()
+
+        classes_today = (
+        db.query(Timetable)
+        .join(FacultyCourse, FacultyCourse.course_id == Timetable.course_id)
+        .filter(
+                FacultyCourse.faculty_id == faculty.id,
+                Timetable.day_of_week == today
+            ).count()
+        )
+
+        next_class = (
+            db.query(
+                Course.course_name,
+                Timetable.start_time,
+                Timetable.room
+            )
+            .join(FacultyCourse, FacultyCourse.course_id == Course.id)
+            .join(Timetable, Timetable.course_id == Course.id)
+            .filter(
+                FacultyCourse.faculty_id == faculty.id,
+                Timetable.day_of_week == today,
+                Timetable.start_time > current_time
+            )
+            .order_by(Timetable.start_time)
+            .first()
+        )
+
+        next_class_info = None
+
+        if next_class:
+            next_class_info = {
+                "course": next_class.course_name,
+                "time": next_class.start_time.strftime("%I:%M %p"),
+                "room": next_class.room
+            }
+
+        
+
+
+        return {
+            "courses": courses_count or 0,
+            "students": students_count or 0,
+            "pending_papers": pending_papers or 0,
+            "meetings_today": meetings_today or 0,
+            "classes_today": classes_today or 0,
+            "next_class": next_class_info
+        }
+
+
+    
+
 
 
 @router.get("/my-courses")
@@ -288,5 +408,71 @@ def create_timetable_entry(
     db.refresh(entry)
 
     return entry
+
+
+@router.get("/course/{course_id}/students")
+def get_students_for_course(
+    course_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_faculty)
+):
+    faculty = db.query(Faculty).filter(
+        Faculty.user_id == current_user.id
+    ).first()
+
+    teaches = db.query(FacultyCourse).filter(
+        FacultyCourse.faculty_id == faculty.id,
+        FacultyCourse.course_id == course_id
+    ).first()
+
+    if not teaches:
+        raise HTTPException(status_code=403, detail="Not assigned to this course")
+
+    students = (
+        db.query(Student)
+        .join(Enrollment, Enrollment.student_id == Student.id)
+        .filter(Enrollment.course_id == course_id)
+        .all()
+    )
+
+    return [
+        {
+            "id": s.id,
+            "name": s.name,
+            "reg_no": s.reg_no
+        }
+        for s in students
+    ]
+
+
+@router.get("/students-summary")
+def students_summary(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_faculty)
+):
+    faculty = db.query(Faculty).filter(
+        Faculty.user_id == current_user.id
+    ).first()
+
+    rows = (
+        db.query(
+            Course.course_name,
+            Course.course_code,
+            func.count(Enrollment.student_id)
+        )
+        .join(FacultyCourse, FacultyCourse.course_id == Course.id)
+        .join(Enrollment, Enrollment.course_id == Course.id)
+        .filter(FacultyCourse.faculty_id == faculty.id)
+        .group_by(Course.id)
+        .all()
+    )
+
+    return [
+        {
+            "course": f"{r.course_code}: {r.course_name}",
+            "students": r[2]
+        }
+        for r in rows
+    ]
 
 
