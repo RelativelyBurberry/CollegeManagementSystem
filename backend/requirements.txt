@@ -6,7 +6,7 @@ python-dotenv
 
 # Auth & security
 python-jose
-passlib[bcrypt]
+passlib
 
 # Forms & uploads
 python-multipart

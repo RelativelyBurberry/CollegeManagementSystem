@@ -12,11 +12,7 @@ from routers import auth, student, faculty, admin, course
 app = FastAPI(title="College Management System")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://127.0.0.1:5500",
-        "http://localhost:5500",
-        "https://collegemanagementsystem-frontend.onrender.com",
-    ],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
