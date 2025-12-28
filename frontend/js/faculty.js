@@ -3,8 +3,10 @@
 
     requireRole("faculty");
 
+    const BASE = "https://collegemanagementsystem-q7g8.onrender.com";
+
     async function loadFacultyProfile() {
-        const faculty = await apiGet("http://127.0.0.1:8000/faculty/me");
+        const faculty = await apiGet(`${BASE}/faculty/me`);
 
         document.querySelector(".profile-name").innerText = faculty.name;
 
@@ -40,7 +42,7 @@
     }
 
     async function loadFacultyDashboard() {
-        const data = await apiGet("http://127.0.0.1:8000/faculty/dashboard");
+        const data = await apiGet(`${BASE}/faculty/dashboard`);
 
         document.getElementById("coursesCount").innerText = data.courses;
         document.getElementById("studentsCount").innerText = data.students;
@@ -71,7 +73,7 @@
     COURSES TAUGHT BY FACULTY
     ================================ */
     async function loadFacultyCourses() {
-        const courses = await apiGet("http://127.0.0.1:8000/faculty/my-courses");
+        const courses = await apiGet(`${BASE}/faculty/my-courses`);
 
         /* ===============================
         1️⃣ UPDATE STAT CARD COUNT
@@ -111,7 +113,7 @@
 
 
     async function loadCoursesModal() {
-        const courses = await apiGet("http://127.0.0.1:8000/faculty/my-courses");
+        const courses = await apiGet(`${BASE}/faculty/my-courses`);
 
         const list = document.getElementById("coursesModalList");
         list.innerHTML = "";
@@ -139,7 +141,7 @@
         const courseId = classSelect.value;
 
         const students = await apiGet(
-            `http://127.0.0.1:8000/faculty/course/${courseId}/students`
+            `${BASE}/faculty/course/${courseId}/students`
         );
 
         const tableBody = document.getElementById("attendanceTable");
@@ -162,7 +164,7 @@
     }
 
     async function loadStudentsModal() {
-        const data = await apiGet("http://127.0.0.1:8000/faculty/students-summary");
+        const data = await apiGet(`${BASE}/faculty/students-summary`);
 
         const container = document.getElementById("studentsModalContent");
         const totalEl = document.getElementById("studentsTotal");
@@ -197,7 +199,7 @@
 
         // Create attendance session
         const sessionRes = await fetch(
-            "http://127.0.0.1:8000/faculty/attendance/session",
+            `${BASE}/faculty/attendance/session`,
             {
                 method: "POST",
                 headers: {
@@ -215,7 +217,7 @@
         const selects = document.querySelectorAll("select[data-student]");
         for (const sel of selects) {
             await fetch(
-                "http://127.0.0.1:8000/faculty/attendance/mark",
+                `${BASE}/faculty/attendance/mark`,
                 {
                     method: "POST",
                     headers: {
@@ -241,7 +243,7 @@
         const courseId = document.getElementById("resultCourseSelect").value;
         const grade = document.getElementById(`grade-${studentId}`).value;
 
-        await fetch("http://127.0.0.1:8000/faculty/final-grade", {
+        await fetch(`${BASE}/faculty/final-grade`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -259,7 +261,7 @@
     }
 
     async function loadPapersModal() {
-        const data = await apiGet("http://127.0.0.1:8000/faculty/papers-summary");
+        const data = await apiGet(`${BASE}/faculty/papers-summary`);
 
         const modalBody = document.querySelector("#papersModal .modal-body");
         modalBody.innerHTML = "";

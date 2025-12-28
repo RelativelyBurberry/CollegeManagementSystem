@@ -2,10 +2,10 @@ import { requireRole } from "./auth.js";
 import { apiGet } from "./api.js";
 
 requireRole("student");
-
+const BASE = "https://collegemanagementsystem-q7g8.onrender.com";
 
     async function loadStudentProfile() {
-    const student = await apiGet("http://127.0.0.1:8000/students/me");
+    const student = await apiGet(`${BASE}/students/me`);
 
     // Name
     document.querySelector(".profile-name").innerText = student.name;
@@ -50,7 +50,7 @@ requireRole("student");
 
 
     async function loadStudentCourses() {
-        const courses = await apiGet("http://127.0.0.1:8000/students/my-courses");
+        const courses = await apiGet(`${BASE}/students/my-courses`);
 
         const select = document.getElementById("courseSelect");
         select.innerHTML = "";
@@ -68,7 +68,7 @@ requireRole("student");
         const courseId = document.getElementById("courseSelect").value;
 
         const grade = await apiGet(
-            `http://127.0.0.1:8000/students/final-grade/${courseId}`
+            `${BASE}/students/final-grade/${courseId}`
         );
 
         document.getElementById("finalGrade").innerText =
@@ -81,7 +81,7 @@ requireRole("student");
 
         if (!container || !daySelect) return; // page guard
 
-        const data = await apiGet("http://127.0.0.1:8000/students/my-timetable");
+        const data = await apiGet(`${BASE}/students/my-timetable`);
 
         function render(day) {
             const rows = data.filter(d => d.day_of_week === day);
@@ -127,7 +127,7 @@ requireRole("student");
 
     async function loadStudentDashboard() {
         alert("dashboard function called");
-        const data = await apiGet("http://127.0.0.1:8000/students/dashboard");
+        const data = await apiGet(`${BASE}/students/dashboard`);
         console.log("Dashboard data:", data);
 
         const map = {
@@ -146,8 +146,8 @@ requireRole("student");
 
     async function loadAttendance() {
         try {
-            
-            const data = await apiGet("http://127.0.0.1:8000/students/attendance");
+
+            const data = await apiGet(`${BASE}/students/attendance`);
             document.getElementById("attendancePercent").innerText =
             data.attendance_percentage + "%";
         } catch (err) {
@@ -163,7 +163,7 @@ requireRole("student");
 
     try {
         const data = await apiGet(
-            "http://127.0.0.1:8000/students/my-attendance-summary"
+            `${BASE}/students/my-attendance-summary`
         );
 
         tbody.innerHTML = "";
@@ -205,7 +205,7 @@ async function loadResults() {
     if (!tbody) return;
 
     try {
-        const data = await apiGet("http://127.0.0.1:8000/students/my-results");
+        const data = await apiGet(`${BASE}/students/my-results`);
 
         tbody.innerHTML = "";
 
@@ -266,7 +266,7 @@ async function loadResults() {
 
 async function loadSettings() {
     try {
-        const data = await apiGet("http://127.0.0.1:8000/students/settings");
+        const data = await apiGet(`${BASE}/students/settings`);
 
         document.getElementById("username").value = data.username;
         document.getElementById("email").value = data.email;
@@ -300,7 +300,7 @@ document.querySelector(".settings-form").addEventListener("submit", async (e) =>
     };
 
     try {
-        await fetch("http://127.0.0.1:8000/students/settings", {
+        await fetch(`${BASE}/students/settings`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",

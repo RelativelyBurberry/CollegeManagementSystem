@@ -3,7 +3,7 @@ import { apiGet } from "./api.js";
 
 requireRole("admin");
 
-const BASE = "http://127.0.0.1:8000";
+const BASE = "https://collegemanagementsystem-q7g8.onrender.com";
 const token = localStorage.getItem("token");
 console.log("TOKEN:", localStorage.getItem("token"));
 
@@ -124,7 +124,7 @@ window.deleteStudent = async function (id) {
 window.logout = logout;
 
 async function loadDepartments() {
-  const res = await fetch("http://127.0.0.1:8000/admin/departments", {
+  const res = await fetch(`${BASE}/admin/departments`, {
     headers: {
       "Authorization": `Bearer ${localStorage.getItem("token")}`
     }
@@ -200,7 +200,7 @@ window.submitStudent = async function () {
       department_id: parseInt(deptIdVal)
     };
 
-    const res = await fetch("http://127.0.0.1:8000/admin/students", {
+    const res = await fetch(`${BASE}/admin/students`, {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${localStorage.getItem("token")}`,
@@ -218,7 +218,7 @@ window.submitStudent = async function () {
   // UPDATE
   else {
     const url =
-      `http://127.0.0.1:8000/admin/students/${editingStudentId}` +
+      `${BASE}/admin/students/${editingStudentId}` +
       `?name=${nameVal}&reg_no=${regNoVal}&department_id=${deptIdVal}`;
 
     const res = await fetch(url, {
@@ -504,7 +504,7 @@ window.addFacultyEmail = async function (facultyId) {
   if (!email) return;
 
   const res = await fetch(
-    `http://127.0.0.1:8000/admin/faculty/${facultyId}/create-user`,
+    `${BASE}/admin/faculty/${facultyId}/create-user`,
     {
       method: "POST",
       headers: {
@@ -623,7 +623,7 @@ window.editFaculty = function (id, name, emp, email, dept) {
 
 window.deleteFaculty = async function (id) {
   if (!confirm("Delete faculty?")) return;
-  await fetch(`http://127.0.0.1:8000/admin/faculty/${id}`, {
+  await fetch(`${BASE}/admin/faculty/${id}`, {
     method: "DELETE",
     headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
   });
@@ -631,7 +631,7 @@ window.deleteFaculty = async function (id) {
 };
 
 async function loadFacultyDepartments() {
-  const depts = await apiGet("http://127.0.0.1:8000/admin/departments");
+  const depts = await apiGet(`${BASE}admin/departments`);
   f_department.innerHTML = `<option value="">Select Department</option>`;
   depts.forEach(d => {
     f_department.innerHTML += `<option value="${d.id}">${d.code} - ${d.name}</option>`;
@@ -838,7 +838,7 @@ window.assignCourse = async function () {
 
 
 async function loadFacultyCourseMapping(facultyId = null) {
-  let url = "http://127.0.0.1:8000/admin/faculty-courses";
+  let url = `${BASE}/admin/faculty-courses`;
   if (facultyId) url += `?faculty_id=${facultyId}`;
 
   const rows = await apiGet(url);
