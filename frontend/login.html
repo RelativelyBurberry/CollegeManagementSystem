@@ -110,7 +110,7 @@
         <div class="left-container">
             <div id="loginForm">
                 <h2>Login</h2>
-                <form id = "login-form" onsubmit="validateLogin(event)">
+                <form id = "login-form">
                 
                     <label id="login-label" for="login-username">Username:</label>
                     <input type="text" id="login-username" name="username" required>
@@ -201,10 +201,10 @@
     }
 
 
-
+    const loginForm = document.getElementById("login-form");
    
-   window.validateLogin = async function (event) {
-    event.preventDefault(); // 🚨 THIS STOPS PAGE RELOAD
+   loginForm.addEventListener("submit", async (event) => {
+    event.preventDefault(); // 🧠 THIS is what you wanted all along
 
     const email = document.getElementById("login-username").value;
     const password = document.getElementById("login-password").value;
@@ -235,11 +235,9 @@
             return;
         }
 
-        // ✅ SAVE AUTH
         localStorage.setItem("token", data.access_token);
         localStorage.setItem("role", data.role);
 
-        // ✅ REDIRECT
         if (data.role === "student") {
             window.location.href = "student_dashboard.html";
         } else if (data.role === "faculty") {
@@ -252,7 +250,7 @@
         console.error(err);
         alert("Server error");
     }
-}
+});
 
 </script>
 
