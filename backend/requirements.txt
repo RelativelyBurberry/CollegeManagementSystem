@@ -3,7 +3,17 @@ uvicorn
 sqlalchemy
 psycopg2-binary
 python-dotenv
-pydantic
-email-validator
+
+# Auth & security
 python-jose
 passlib[bcrypt]
+
+# Forms & uploads
+python-multipart
+
+# Validation
+pydantic
+email-validator
+
+alembic          # if migrations
+python-dateutil  # if date parsing
