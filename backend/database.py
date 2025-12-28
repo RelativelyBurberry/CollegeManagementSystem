@@ -1,4 +1,8 @@
 # database.py
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
@@ -14,9 +18,8 @@ DB_HOST = "localhost"
 DB_PORT = "5432"
 DB_NAME = "college_db"
 
-DATABASE_URL = (
-    f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-) 
+DATABASE_URL = os.getenv("DATABASE_URL")
+
 
 #connection string format for PostgreSQL
 
