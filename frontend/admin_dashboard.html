@@ -232,16 +232,92 @@
 
   </section>
 
-  <!-- ================= PLACEHOLDERS ================= -->
+
   <section id="departments" class="section">
-    <h1>Departments</h1>
-    <p>Coming soon</p>
-  </section>
+  <h1>Department Management</h1>
+
+  <!-- Add / Edit Department -->
+  <div class="card">
+    <h3 id="deptFormTitle">Add Department</h3>
+
+    <input id="dept_code" placeholder="Department Code (e.g. CSE)">
+    <input id="dept_name" placeholder="Department Name">
+
+    <button id="deptSubmitBtn" onclick="submitDepartment()">Create</button>
+  </div>
+
+  <!-- Search -->
+  <div class="card">
+    <input
+      id="deptSearchInput"
+      placeholder="Search by code or name"
+    />
+
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Code</th>
+          <th>Name</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="deptTable"></tbody>
+    </table>
+
+    <div class="pagination">
+      <button onclick="prevDeptPage()">Prev</button>
+      <span id="deptPageInfo"></span>
+      <button onclick="nextDeptPage()">Next</button>
+    </div>
+  </div>
+</section>
+
 
   <section id="courses" class="section">
-    <h1>Courses</h1>
-    <p>Coming soon</p>
-  </section>
+  <h1>Course Management</h1>
+
+  <div class="card">
+    <h3 id="courseFormTitle">Add Course</h3>
+
+    <input id="course_code" placeholder="Course Code (e.g. CS101)">
+    <input id="course_name" placeholder="Course Name">
+    <input id="course_credits" placeholder="Credits">
+    <input id="course_sem" placeholder="Semester">
+
+    <select id="course_dept" class="input-select" ></select>
+
+    <button id="courseSubmitBtn" onclick="submitCourse()">Create</button>
+  </div>
+
+  <div class="card">
+    <input
+      id="courseSearchAdmin"
+      placeholder="Search by code or name"
+    />
+
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Code</th>
+          <th>Name</th>
+          <th>Dept</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="courseTable"></tbody>
+    </table>
+
+    <div class="pagination">
+      <button onclick="prevCourseAdminPage()">Prev</button>
+      <span id="coursePageInfo"></span>
+      <button onclick="nextCourseAdminPage()">Next</button>
+    </div>
+  </div>
+</section>
+
+
 
   
 

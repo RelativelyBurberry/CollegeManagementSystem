@@ -22,6 +22,19 @@ const STUDENT_COURSES_PER_PAGE = 3;
 
 let selectedStudentCourseId = null;
 
+let allDepartments = [];
+let filteredDepartments = [];
+let deptPage = 1;
+const DEPTS_PER_PAGE = 5;
+let editingDeptId = null;
+
+let allAdminCourses = [];
+let filteredAdminCourses = [];
+let courseAdminPage = 1;
+const COURSES_PER_PAGE_ADMIN = 5;
+let editingCourseId = null;
+
+
 
 async function loadStudents() {
   allStudents = await apiGet(`${BASE}/students`);
@@ -878,6 +891,262 @@ window.unassignCourse = async function (facultyId, courseId) {
 
 
 
+async function loadDepartmentsAdmin() {
+  allDepartments = await apiGet(`${BASE}/admin/departments`);
+  filteredDepartments = allDepartments;
+  deptPage = 1;
+  renderDepartments();
+}
+
+function renderDepartments() {
+  const tbody = document.getElementById("deptTable");
+  tbody.innerHTML = "";
+
+  const start = (deptPage - 1) * DEPTS_PER_PAGE;
+  const pageData = filteredDepartments.slice(start, start + DEPTS_PER_PAGE);
+
+  pageData.forEach(d => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${d.id}</td>
+        <td>${d.code}</td>
+        <td>${d.name}</td>
+        <td>
+          <button onclick="editDepartment(${d.id}, '${d.code}', '${d.name}')">Edit</button>
+          <button onclick="deleteDepartment(${d.id})">Delete</button>
+        </td>
+      </tr>
+    `;
+  });
+
+  document.getElementById("deptPageInfo").innerText =
+    `Page ${deptPage} of ${Math.ceil(filteredDepartments.length / DEPTS_PER_PAGE)}`;
+}
+
+window.nextDeptPage = function () {
+  if (deptPage * DEPTS_PER_PAGE < filteredDepartments.length) {
+    deptPage++;
+    renderDepartments();
+  }
+};
+
+window.prevDeptPage = function () {
+  if (deptPage > 1) {
+    deptPage--;
+    renderDepartments();
+  }
+};
+
+async function loadCourseDepartments() {
+  const depts = await apiGet(`${BASE}/admin/departments`);
+  const select = document.getElementById("course_dept");
+
+  select.innerHTML = `<option value="">Select Department</option>`;
+
+  depts.forEach(d => {
+    select.innerHTML += `
+      <option value="${d.id}">
+        ${d.code} - ${d.name}
+      </option>
+    `;
+  });
+}
+
+
+window.submitDepartment = async function () {
+  const code = dept_code.value.trim();
+  const name = dept_name.value.trim();
+
+  if (!code || !name) {
+    alert("Fill all fields");
+    return;
+  }
+
+  let res;
+
+  if (!editingDeptId) {
+    res = await fetch(`${BASE}/admin/departments`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ code, name })
+    });
+  } else {
+    res = await fetch(
+      `${BASE}/admin/departments/${editingDeptId}?code=${code}&name=${name}`,
+      {
+        method: "PUT",
+        headers: { "Authorization": `Bearer ${token}` }
+      }
+    );
+  }
+
+  if (!res.ok) {
+    alert("Operation failed");
+    return;
+  }
+
+  editingDeptId = null;
+  deptSubmitBtn.innerText = "Create";
+  deptFormTitle.innerText = "Add Department";
+  dept_code.value = dept_name.value = "";
+
+  loadDepartmentsAdmin();
+};
+
+window.editDepartment = function (id, code, name) {
+  editingDeptId = id;
+  dept_code.value = code;
+  dept_name.value = name;
+  deptSubmitBtn.innerText = "Update";
+  deptFormTitle.innerText = "Edit Department";
+};
+
+window.deleteDepartment = async function (id) {
+  if (!confirm("Delete department?")) return;
+
+  const res = await fetch(`${BASE}/admin/departments/${id}`, {
+    method: "DELETE",
+    headers: { "Authorization": `Bearer ${token}` }
+  });
+
+  if (!res.ok) {
+    alert("Cannot delete department (in use)");
+    return;
+  }
+
+  loadDepartmentsAdmin();
+};
+
+
+async function loadCoursesAdmin() {
+  allAdminCourses = await apiGet(`${BASE}/admin/courses`);
+  filteredAdminCourses = allAdminCourses;
+  courseAdminPage = 1;
+  renderCoursesAdmin();
+}
+
+function renderCoursesAdmin() {
+  const tbody = document.getElementById("courseTable");
+  tbody.innerHTML = "";
+
+  const start = (courseAdminPage - 1) * COURSES_PER_PAGE_ADMIN;
+  const pageData = filteredAdminCourses.slice(start, start + COURSES_PER_PAGE_ADMIN);
+
+  pageData.forEach(c => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${c.id}</td>
+        <td>${c.course_code}</td>
+        <td>${c.course_name}</td>
+        <td>${c.department_id}</td>
+        <td>
+          <button onclick="editCourse(${c.id}, '${c.course_code}', '${c.course_name}', ${c.credits}, ${c.semester}, ${c.department_id})">Edit</button>
+          <button onclick="deleteCourse(${c.id})">Delete</button>
+        </td>
+      </tr>
+    `;
+  });
+
+  window.nextCourseAdminPage = function () {
+  if (courseAdminPage * COURSES_PER_PAGE_ADMIN < filteredAdminCourses.length) {
+    courseAdminPage++;
+    renderCoursesAdmin();
+  }
+};
+
+window.prevCourseAdminPage = function () {
+  if (courseAdminPage > 1) {
+    courseAdminPage--;
+    renderCoursesAdmin();
+  }
+};
+
+
+  document.getElementById("coursePageInfo").innerText =
+    `Page ${courseAdminPage} of ${Math.ceil(filteredAdminCourses.length / COURSES_PER_PAGE_ADMIN)}`;
+}
+
+
+document.getElementById("courseSearchAdmin")
+  .addEventListener("input", e => {
+    const q = e.target.value.toLowerCase();
+
+    filteredAdminCourses = allAdminCourses.filter(c =>
+      c.course_code.toLowerCase().includes(q) ||
+      c.course_name.toLowerCase().includes(q)
+    );
+
+    courseAdminPage = 1;
+    renderCoursesAdmin();
+  });
+
+  window.submitCourse = async function () {
+  const payload = {
+    course_code: course_code.value.trim(),
+    course_name: course_name.value.trim(),
+    credits: parseInt(course_credits.value),
+    semester: parseInt(course_sem.value),
+    department_id: parseInt(course_dept.value)
+  };
+
+  let res;
+
+  if (!editingCourseId) {
+    res = await fetch(`${BASE}/admin/courses`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+  } else {
+    res = await fetch(
+      `${BASE}/admin/courses/${editingCourseId}`,
+      {
+        method: "PUT",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      }
+    );
+  }
+
+  if (!res.ok) {
+    alert("Course operation failed");
+    return;
+  }
+
+  editingCourseId = null;
+  courseSubmitBtn.innerText = "Create";
+  courseFormTitle.innerText = "Add Course";
+  course_code.value = course_name.value =
+  course_credits.value = course_sem.value = "";
+
+  loadCoursesAdmin();
+};
+
+window.deleteCourse = async function (id) {
+  if (!confirm("Delete course?")) return;
+
+  const res = await fetch(`${BASE}/admin/courses/${id}`, {
+    method: "DELETE",
+    headers: { "Authorization": `Bearer ${token}` }
+  });
+
+  if (!res.ok) {
+    alert("Cannot delete course (in use)");
+    return;
+  }
+
+  loadCoursesAdmin();
+};
+
 
 document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".menu").forEach(item => {
@@ -895,6 +1164,9 @@ document.addEventListener("DOMContentLoaded", () => {
   loadFaculty();
   loadFacultyDepartments();
   loadCoursesForAssign();
+  loadDepartmentsAdmin();
+  loadCoursesAdmin();
+  loadCourseDepartments();
 
 });
 
