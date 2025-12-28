@@ -1,7 +1,10 @@
 import { requireRole, logout } from "./auth.js";
 import { apiGet } from "./api.js";
 
-requireRole("admin");
+document.addEventListener("DOMContentLoaded", () => {
+    requireRole("admin");
+});
+
 
 const BASE = "https://collegemanagementsystem-q7g8.onrender.com";
 const token = localStorage.getItem("token");

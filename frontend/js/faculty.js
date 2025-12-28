@@ -1,8 +1,11 @@
     import { requireRole } from "./auth.js";
     import { apiGet } from "./api.js";
 
+    document.addEventListener("DOMContentLoaded", () => {
     requireRole("faculty");
+});
 
+    const token = localStorage.getItem("token");
     const BASE = "https://collegemanagementsystem-q7g8.onrender.com";
 
     async function loadFacultyProfile() {
